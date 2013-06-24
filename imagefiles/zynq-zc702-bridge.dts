@@ -304,6 +304,7 @@
 			interrupts = <0 0x37 4>;
 			interrupt-parent = <&gic>;
 			reg = <0x6e400000 0x20000>;
+			reg = <0x6e410000 0x10000>;
 			device-name = "fpga0";
 		}; /* */
 	};

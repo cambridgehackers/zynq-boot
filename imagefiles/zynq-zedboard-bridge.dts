@@ -229,6 +229,7 @@
 			interrupt-parent = <&gic>;
 			device-name = "fpga0";
 			reg = <0x6e400000 0x20000>;
+			fifo = <0x6e410000 0x10000>;
 		}; /* */
 	};
 };
