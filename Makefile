@@ -6,7 +6,8 @@ all: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf
 	bootgen -image boot.bif -o i boot.bin
 	rm -f zcomposite.elf
 
-DTC=/scratch/jamey/xlaatu/device/xilinx/kernel/scripts/dtc/dtc
+#DTC=/scratch/jamey/xlaatu/device/xilinx/kernel/scripts/dtc/dtc
+DTC=../device_xilinx_kernel/scripts/dtc/dtc
 
 imagefiles/zynq-$(BOARD)-bridge.dtb: imagefiles/zynq-$(BOARD)-bridge.dts
 	$(DTC) -I dts -O dtb -o imagefiles/zynq-$(BOARD)-bridge.dtb imagefiles/zynq-$(BOARD)-bridge.dts
