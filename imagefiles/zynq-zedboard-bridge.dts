@@ -135,6 +135,24 @@
 			};
 		};
 
+		i2c1: i2c@e0005000 {
+			compatible = "xlnx,ps7-i2c-1.00.a";
+			reg = <0xE0005000 0x1000>;
+			interrupts = <0 48 4>;
+			interrupt-parent = <&gic>;
+			bus-id = <1>;
+			input-clk = <133000000>;
+			i2c-clk = <400000>;
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+			adv7511@39 {
+				compatible = "adv7511";
+				reg = <0x39>;
+				format = "disconnected";
+			};
+		};
+
 		sdhci@e0100000 {
 			compatible = "xlnx,ps7-sdhci-1.00.a";
 			reg = <0xe0100000 0x1000>;
