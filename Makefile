@@ -10,8 +10,7 @@ all: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf
 DTC=../device_xilinx_kernel/scripts/dtc/dtc
 
 imagefiles/zynq-$(BOARD)-bridge.dtb: imagefiles/zynq-$(BOARD)-bridge.dts
-	if [ "$$USER" = "jamey" ]; then sed -i "s/00 E0 0C 00 73 03/00 E0 0C 00 73 05/" imagefiles/zynq-$(BOARD)-bridge.dts; fi
-	if [ "$$USER" = "mdk" ]; then sed -i "s/00 E0 0C 00 73 03/00 E0 0C 00 73 07/" imagefiles/zynq-$(BOARD)-bridge.dts; fi
+	macbyte=`echo $USER | md5sum | cut -c 1-2`; sed -i s/73/$$macbyte/ imagefiles/zynq-$(BOARD)-bridge.dts
 	$(DTC) -I dts -O dtb -o imagefiles/zynq-$(BOARD)-bridge.dtb imagefiles/zynq-$(BOARD)-bridge.dts
 
 zcomposite.elf: ramdisk imagefiles/zynq-$(BOARD)-bridge.dtb
