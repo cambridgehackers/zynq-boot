@@ -10,10 +10,10 @@ all: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf
 DTC=../device_xilinx_kernel/scripts/dtc/dtc
 
 imagefiles/zynq-$(BOARD)-bridge.dtb: imagefiles/zynq-$(BOARD)-bridge.dts
-	cp imagefiles/zynq-$(BOARD)-bridge.dts xx.temp.dts
-	macbyte=`echo $USER | md5sum | cut -c 1-2`; sed -i s/73/$$macbyte/ xx.temp.dts
-	$(DTC) -I dts -O dtb -o imagefiles/zynq-$(BOARD)-bridge.dtb xx.temp.dts
-	rm -f xx.temp.dts
+	cp imagefiles/zynq-$(BOARD)-bridge.dts dtswork.tmp
+	macbyte=`echo $USER | md5sum | cut -c 1-2`; sed -i s/73/$$macbyte/ dtswork.tmp
+	$(DTC) -I dts -O dtb -o imagefiles/zynq-$(BOARD)-bridge.dtb dtswork.tmp
+	rm -f dtswork.tmp
 
 zcomposite.elf: ramdisk imagefiles/zynq-$(BOARD)-bridge.dtb
 	objcopy -I binary -O elf32-little imagefiles/zImage z.tmp
