@@ -28,5 +28,9 @@ zcomposite.elf: ramdisk imagefiles/zynq-$(BOARD)-bridge.dtb
 ramdisk:
 	cd data; (find . -name unused -o -print | cpio -H newc -o | gzip -9 -n | dd of=../ramdisk.image.gz bs=256k iflag=fullblock conv=sync)
 
-xbootgen: xbootgen.c
-	gcc -o xbootgen xbootgen.c
+xbootgen: xbootgen.c Makefile
+	arm-none-linux-gnueabi-gcc -c reserved_for_interrupts.S
+	arm-none-linux-gnueabi-ld -Ttext-segment 0 -e 0 -o c.tmp reserved_for_interrupts.o
+	objcopy -O binary -I elf32-little c.tmp reserved_for_interrupts.tmp
+	rm -f c.tmp
+	gcc -g -o xbootgen xbootgen.c

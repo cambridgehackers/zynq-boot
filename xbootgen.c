@@ -120,11 +120,11 @@ int main(int argc, char *argv[])
 {
     int i, index, j, entry, input_file_count = 2;
 
-    if (argc != input_file_count + 1 || (fdoutfile = creat ("boot.tmp", 0666)) < 0) {
+    if (argc != input_file_count + 1 || (fdoutfile = creat ("boot.bin", 0666)) < 0) {
         printf ("xbootgen <fsbl> <composite>\n");
         exit(-1);
     }
-    int tmpfd = open ("d.tmp", O_RDONLY);
+    int tmpfd = open ("reserved_for_interrupts.tmp", O_RDONLY);
     int len = read(tmpfd, buffer, sizeof(buffer));
     close(tmpfd);
     write(fdoutfile, buffer, len);
