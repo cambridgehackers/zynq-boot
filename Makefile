@@ -1,10 +1,10 @@
 #
 
-all: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf
+all: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf xbootgen
 	if [ -f boot.bin ]; then mv -v boot.bin boot.bin.bak; fi
 	cp -f imagefiles/zynq_$(BOARD)_fsbl.elf zynq_fsbl.elf
-	bootgen -image boot.bif -o i boot.bin
-	rm -f zcomposite.elf
+	#bootgen -image boot.bif -o i boot.bin
+	./xbootgen zynq_fsbl.elf zcomposite.elf
 
 #DTC=/scratch/jamey/xlaatu/device/xilinx/kernel/scripts/dtc/dtc
 DTC=../device_xilinx_kernel/scripts/dtc/dtc
@@ -27,3 +27,6 @@ zcomposite.elf: ramdisk imagefiles/zynq-$(BOARD)-bridge.dtb
 
 ramdisk:
 	cd data; (find . -name unused -o -print | cpio -H newc -o | gzip -9 -n | dd of=../ramdisk.image.gz bs=256k iflag=fullblock conv=sync)
+
+xbootgen: xbootgen.c
+	gcc -o xbootgen xbootgen.c
