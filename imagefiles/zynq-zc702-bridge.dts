@@ -148,7 +148,7 @@
 					};
 				};
 
-				/*i2c@1 {
+				i2c@1 {
 					#address-cells = <1>;
 					#size-cells = <0>;
 					reg = <1>;
@@ -157,7 +157,7 @@
 						reg = <0x39>;
 						format = "RGB";
 					};
-				}; */
+				};
 
 				i2c@2 {
 					#address-cells = <1>;
