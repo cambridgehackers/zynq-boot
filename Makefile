@@ -9,17 +9,17 @@ all: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf xbootgen
 #DTC=/scratch/jamey/xlaatu/device/xilinx/kernel/scripts/dtc/dtc
 DTC=../device_xilinx_kernel/scripts/dtc/dtc
 
-imagefiles/zynq-$(BOARD)-bridge.dtb: imagefiles/zynq-$(BOARD)-bridge.dts
-	cp imagefiles/zynq-$(BOARD)-bridge.dts dtswork.tmp
+imagefiles/zynq-$(BOARD)-portal.dtb: imagefiles/zynq-$(BOARD)-portal.dts
+	cp imagefiles/zynq-$(BOARD)-portal.dts dtswork.tmp
 	macbyte=`echo $USER | md5sum | cut -c 1-2`; sed -i s/73/$$macbyte/ dtswork.tmp
-	$(DTC) -I dts -O dtb -o imagefiles/zynq-$(BOARD)-bridge.dtb dtswork.tmp
+	$(DTC) -I dts -O dtb -o imagefiles/zynq-$(BOARD)-portal.dtb dtswork.tmp
 	rm -f dtswork.tmp
 
-zcomposite.elf: ramdisk imagefiles/zynq-$(BOARD)-bridge.dtb
+zcomposite.elf: ramdisk imagefiles/zynq-$(BOARD)-portal.dtb
 	objcopy -I binary -O elf32-little imagefiles/zImage z.tmp
 	objcopy -I binary -O elf32-little ramdisk.image.gz r.tmp
-	objcopy -I binary -O elf32-little imagefiles/zynq-$(BOARD)-bridge.dtb d.tmp
-	rm -f imagefiles/zynq-$(BOARD)-bridge.dtb
+	objcopy -I binary -O elf32-little imagefiles/zynq-$(BOARD)-portal.dtb d.tmp
+	rm -f imagefiles/zynq-$(BOARD)-portal.dtb
 	arm-none-linux-gnueabi-gcc -c clearreg.S
 	arm-none-linux-gnueabi-ld -Ttext-segment 0 -e 0 -o c.tmp clearreg.o
 	ld -b elf32-little --accept-unknown-input-arch  -z max-page-size=0x8000 -o zcomposite.elf -T zynq_linux_boot.lds 

@@ -9,7 +9,7 @@
 
 	memory {
 		device_type = "memory";
-		reg = <0x00000000 0x20000000>;
+		reg = <0x00000000 0x40000000>;
 	};
 	chosen {
 		bootargs = "console=ttyPS0,115200 initrd=0x00800000,256K noinitrd init=/init root=/dev/ram rw ip=:::::eth0:dhcp earlyprintk";
@@ -105,15 +105,16 @@
 			xlnx,slcr-div1-10Mbps = <50>;
 			#address-cells = <0x1>;
 			#size-cells = <0x0>;
-			local-mac-address = [ 00 E0 0C 00 73 03 ];
+			local-mac-address = [ 00 E0 0C 00 73 09 ];
 			mdio {
 				#address-cells = <1>;
 				#size-cells = <0>;
-				phy0: phy@0 {
-					compatible = "marvell,88e1510";
+				phy0: phy@7 {
+					compatible = "marvell,88e1116r";
 					device_type = "ethernet-phy";
-				        marvell,reg-init = <0x03 0x10 0xFF00 0x1E 0x03 0x11 0xFFF0 0x0A>;
-					reg = <0>;
+					reg = <7>;
+					/*linux,phandle = <0x2>;
+					phandle = <0x2>; */
 				};
 			};
 		};
@@ -124,32 +125,89 @@
 			interrupts = <0 25 4>;
 			interrupt-parent = <&gic>;
 			bus-id = <0>;
-			input-clk = <133000000>;
-			i2c-clk = <400000>;
+			input-clk = <111111111>;
+			i2c-clk = <100000>;
 
 			#address-cells = <1>;
 			#size-cells = <0>;
-			m24c02_eeprom@52 {
-				compatible = "at,24c02";
-				reg = <0x52>;
-			};
-		};
+			i2cswitch@74 {
+				compatible = "nxp,pca9548";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <0x74>;
 
-		i2c1: i2c@e0005000 {
-			compatible = "xlnx,ps7-i2c-1.00.a";
-			reg = <0xE0005000 0x1000>;
-			interrupts = <0 48 4>;
-			interrupt-parent = <&gic>;
-			bus-id = <1>;
-			input-clk = <133000000>;
-			i2c-clk = <400000>;
+				i2c@0 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <0>;
+					osc@5d {
+						compatible = "si570";
+						reg = <0x5d>;
+						factory-fout = <156250000>;
+						initial-fout = <148500000>;
+					};
+				};
 
-			#address-cells = <1>;
-			#size-cells = <0>;
-			adv7511@39 {
-				compatible = "adv7511";
-				reg = <0x39>;
-				format = "disconnected";
+				i2c@1 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <1>;
+					adv7511@39 {
+						compatible = "adv7511";
+						reg = <0x39>;
+						format = "RGB";
+					};
+				};
+
+				i2c@2 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <2>;
+					eeprom@54 {
+						compatible = "at,24c08";
+						reg = <0x54>;
+					};
+				};
+
+				i2c@3 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <3>;
+					gpio@21 {
+						compatible = "ti,tca6416";
+						reg = <0x21>;
+						gpio-controller;
+						#gpio-cells = <2>;
+					};
+				};
+
+				i2c@4 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <4>;
+					rtc@54 {
+						compatible = "nxp,pcf8563";
+						reg = <0x51>;
+					};
+				};
+
+				i2c@7 {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <7>;
+					hwmon@52 {
+						compatible = "pmbus,ucd9248";
+						reg = <52>;
+					};
+					hwmon@53 {
+						compatible = "pmbus,ucd9248";
+						reg = <53>;
+					};
+					hwmon@54 {
+						compatible = "pmbus,ucd9248";
+						reg = <54>;
+					};
+				};
 			};
 		};
 
@@ -238,16 +296,62 @@
  			interrupts = <0 7 4>;
  			interrupt-parent = <&gic>;
 		};
+		/* assigned interrupt number corresponds to actual SPI - 32 */
 		fpga0@0x6e400000 {
 			compatible = "linux,ushw-bridge-0.01.a";
-			ip-major-revision = <0>;
-			ip-minor-revision = <1>;
-			ip-patch-revision = <0>;
-			interrupts = <0 0x37 4>;
+			interrupts = <0 59 4>;
 			interrupt-parent = <&gic>;
+			reg = <0x6e400000 0x10000>;
 			device-name = "fpga0";
-			reg = <0x6e400000 0x20000>;
-			fifo = <0x6e410000 0x10000>;
-		}; /* */
+		};
+		fpga1@0x6e410000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 58 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e410000 0x10000>;
+			device-name = "fpga1";
+		};
+		/* fpga2@0x6e420000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 57 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e420000 0x10000>;
+			device-name = "fpga2";
+		};
+		fpga3@0x6e430000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 56 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e430000 0x10000>;
+			device-name = "fpga3";
+		};
+		fpga4@0x6e440000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 55 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e440000 0x10000>;
+			device-name = "fpga4";
+		};
+		fpga5@0x6e450000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 54 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e450000 0x10000>;
+			device-name = "fpga5";
+		};
+		fpga6@0x6e460000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 53 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e460000 0x10000>;
+			device-name = "fpga6";
+		};
+		fpga7@0x6e470000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 52 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e470000 0x10000>;
+			device-name = "fpga7";
+		}; */
 	};
 };
