@@ -299,59 +299,60 @@
 		/* assigned interrupt number corresponds to actual SPI - 32 */
 		fpga0@0x6e400000 {
 			compatible = "linux,ushw-bridge-0.01.a";
-			interrupts = <0 59 4>;
+			interrupts = <0 29 4>;
 			interrupt-parent = <&gic>;
 			reg = <0x6e400000 0x10000>;
 			device-name = "fpga0";
 		};
 		fpga1@0x6e410000 {
 			compatible = "linux,ushw-bridge-0.01.a";
-			interrupts = <0 58 4>;
+			interrupts = <0 30 4>;
 			interrupt-parent = <&gic>;
 			reg = <0x6e410000 0x10000>;
 			device-name = "fpga1";
 		};
 		/* fpga2@0x6e420000 {
 			compatible = "linux,ushw-bridge-0.01.a";
-			interrupts = <0 57 4>;
+			interrupts = <0 31 4>;
 			interrupt-parent = <&gic>;
 			reg = <0x6e420000 0x10000>;
 			device-name = "fpga2";
 		};
 		fpga3@0x6e430000 {
 			compatible = "linux,ushw-bridge-0.01.a";
-			interrupts = <0 56 4>;
+			interrupts = <0 32 4>;
 			interrupt-parent = <&gic>;
 			reg = <0x6e430000 0x10000>;
 			device-name = "fpga3";
 		};
 		fpga4@0x6e440000 {
 			compatible = "linux,ushw-bridge-0.01.a";
-			interrupts = <0 55 4>;
+			interrupts = <0 33 4>;
 			interrupt-parent = <&gic>;
 			reg = <0x6e440000 0x10000>;
 			device-name = "fpga4";
 		};
 		fpga5@0x6e450000 {
 			compatible = "linux,ushw-bridge-0.01.a";
-			interrupts = <0 54 4>;
+			interrupts = <0 34 4>;
 			interrupt-parent = <&gic>;
 			reg = <0x6e450000 0x10000>;
 			device-name = "fpga5";
 		};
 		fpga6@0x6e460000 {
 			compatible = "linux,ushw-bridge-0.01.a";
-			interrupts = <0 53 4>;
+			interrupts = <0 35 4>;
 			interrupt-parent = <&gic>;
 			reg = <0x6e460000 0x10000>;
 			device-name = "fpga6";
 		};
 		fpga7@0x6e470000 {
 			compatible = "linux,ushw-bridge-0.01.a";
-			interrupts = <0 52 4>;
+			interrupts = <0 36 4>;
 			interrupt-parent = <&gic>;
 			reg = <0x6e470000 0x10000>;
 			device-name = "fpga7";
-		}; */
+		};*/
+
 	};
 };
