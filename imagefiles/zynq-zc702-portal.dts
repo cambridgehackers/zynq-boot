@@ -131,7 +131,7 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 			i2cswitch@74 {
-				compatible = "nxp,pca9548";
+				compatible = "zznxp,zzpca9548";
 				#address-cells = <1>;
 				#size-cells = <0>;
 				reg = <0x74>;
@@ -153,7 +153,7 @@
 					#size-cells = <0>;
 					reg = <1>;
 					adv7511@39 {
-						compatible = "zzadv7511";
+						compatible = "adv7511";
 						reg = <0x39>;
 						format = "RGB";
 					};
