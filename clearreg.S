@@ -65,4 +65,5 @@ machine_type:
         cmp     r1, #0
         bne     2b
         ldr     r1, machine_type
+	mov     r2,#0x1000000  // set address of devicetree data
 	// fall through (to start of zImage)
