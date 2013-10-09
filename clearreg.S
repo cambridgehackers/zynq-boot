@@ -57,9 +57,12 @@ data_table:
 	.word SLCR_LOCK_MAGIC, XPSS_SYS_CTRL_BASEADDR + 0x4   //slcr_lock
 
         .word 0,               0                              // end of table
+machine_type:
+        .word 0xd32     // XILINX_EP107 (Zynq) = 3378.
 
 2:	str     r0, [r1]
 3:      ldmia   r4!, {r0,r1}
         cmp     r1, #0
         bne     2b
+        ldr     r1, machine_type
 	// fall through (to start of zImage)
