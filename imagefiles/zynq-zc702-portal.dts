@@ -427,6 +427,13 @@
  			interrupts = <0 7 4>;
  			interrupt-parent = <&gic>;
 		};
+		ps7_dma_s: ps7-dma@f8003000 {
+			#dma-cells = <1>;
+			#dma-channels = <8>;
+			#dma-requests = <4>;
+			arm,primecell-periphid = <0x41330>;
+			compatible = "xlnx,ps7-dma-1.00.a", "arm,primecell", "arm,pl330";
+		};
 		/* assigned interrupt number corresponds to actual SPI - 32 */
 		fpga0@0x6e400000 {
 			compatible = "linux,ushw-bridge-0.01.a";
