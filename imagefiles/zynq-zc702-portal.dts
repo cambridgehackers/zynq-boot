@@ -444,24 +444,108 @@
 		};
 		fpga1@0x6e410000 {
 			compatible = "linux,ushw-bridge-0.01.a";
-			interrupts = <0 30 4>;
+			interrupts = <0 29 4>;
 			interrupt-parent = <&gic>;
 			reg = <0x6e410000 0x10000>;
 			device-name = "fpga1";
 		};
 		fpga2@0x6e420000 {
 			compatible = "linux,ushw-bridge-0.01.a";
-			interrupts = <0 31 4>;
+			interrupts = <0 29 4>;
 			interrupt-parent = <&gic>;
 			reg = <0x6e420000 0x10000>;
 			device-name = "fpga2";
 		};
-		fpga3@0x6e430000 {
+ 		fpga3@0x6e430000 {
 			compatible = "linux,ushw-bridge-0.01.a";
-			interrupts = <0 32 4>;
+			interrupts = <0 29 4>;
 			interrupt-parent = <&gic>;
 			reg = <0x6e430000 0x10000>;
 			device-name = "fpga3";
+		};
+ 		fpga4@0x6e440000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 29 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e440000 0x10000>;
+			device-name = "fpga4";
+		};
+ 		fpga5@0x6e450000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 29 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e450000 0x10000>;
+			device-name = "fpga5";
+		};
+ 		fpga6@0x6e460000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 29 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e460000 0x10000>;
+			device-name = "fpga6";
+		};
+ 		fpga7@0x6e470000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 29 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e470000 0x10000>;
+			device-name = "fpga7";
+		};
+ 		fpga8@0x6e470000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 29 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e480000 0x10000>;
+			device-name = "fpga8";
+		};
+ 		fpga9@0x6e470000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 29 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e490000 0x10000>;
+			device-name = "fpga9";
+		};
+ 		fpga10@0x6e470000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 29 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e4a0000 0x10000>;
+			device-name = "fpga10";
+		};
+ 		fpga11@0x6e470000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 29 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e4b0000 0x10000>;
+			device-name = "fpga11";
+		};
+ 		fpga12@0x6e470000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 29 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e4c0000 0x10000>;
+			device-name = "fpga12";
+		};
+ 		fpga13@0x6e470000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 29 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e4d0000 0x10000>;
+			device-name = "fpga13";
+		};
+ 		fpga14@0x6e470000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 29 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e4e0000 0x10000>;
+			device-name = "fpga14";
+		};
+ 		fpga15@0x6e470000 {
+			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 29 4>;
+			interrupt-parent = <&gic>;
+			reg = <0x6e4f0000 0x10000>;
+			device-name = "fpga15";
 		};
 	};
 };
