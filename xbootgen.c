@@ -25,7 +25,11 @@
 #include <fcntl.h>
 #include <stdint.h>
 #include <arpa/inet.h>
+#ifdef __APPLE__
+#include <machine/endian.h>
+#else
 #include <endian.h>
+#endif
 
 #define BUFFER_SIZE 1024
 
