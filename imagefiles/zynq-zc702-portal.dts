@@ -435,10 +435,10 @@
 			compatible = "xlnx,ps7-dma-1.00.a", "arm,primecell", "arm,pl330";
 		};
 		/* assigned interrupt number corresponds to actual SPI - 32 */
-		portals@0x6e400000 {
+		fpga0@0x6e400000 {
 			compatible = "linux,ushw-bridge-0.01.a";
 			reg = <0x6e400000 0x10000>;
-			device-name = "portals";
+			device-name = "fpga0";
 		};
 		fpga1@0x6e410000 {
 			compatible = "linux,ushw-bridge-0.01.a";
