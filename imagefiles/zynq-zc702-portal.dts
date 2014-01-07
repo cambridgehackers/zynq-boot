@@ -437,6 +437,8 @@
 		/* assigned interrupt number corresponds to actual SPI - 32 */
 		fpga0@0x6e400000 {
 			compatible = "linux,ushw-bridge-0.01.a";
+			interrupts = <0 29 4>;
+			interrupt-parent = <&gic>;
 			reg = <0x6e400000 0x10000>;
 			device-name = "fpga0";
 		};
