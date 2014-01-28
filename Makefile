@@ -13,7 +13,7 @@ all: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf xbootgen reserved_for_inte
 	rm -f zynq_fsbl.elf zcomposite.elf reserved_for_interrupts.tmp
 
 dtb.tmp: imagefiles/zynq-$(BOARD)-portal.dts
-	macbyte=`echo $USER | md5sum | cut -c 1-2`; sed s/73/$$macbyte/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
+	macbyte=`echo $(USER) | md5sum | cut -c 1-2`; sed s/73/$$macbyte/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
 	$(DTC) -I dts -O dtb -o dtb.tmp dtswork.tmp
 	rm -f dtswork.tmp
 

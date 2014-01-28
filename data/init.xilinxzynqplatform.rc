@@ -3,6 +3,6 @@ on early-init
     mkdir /mnt/sdcard 0000 system system
     # for backwards compatibility
 
-    mount vfat /dev/block/mmcblk0 /mnt/sdcard rw wait
+    mount vfat /dev/block/mmcblk0p1 /mnt/sdcard rw wait
     mount ext4 loop@/mnt/sdcard/system.img /system rw wait
     mount ext4 loop@/mnt/sdcard/userdata.img /data rw nosuid nodev wait
