@@ -32,3 +32,6 @@ To build a boot.bin for a zedboard:
 To build a boot.bin for a zc702:
    make BOARD=zc702 all
 
+To build a boot.bin for a zc706:
+   make BOARD=zc706 all
+
