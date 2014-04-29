@@ -2,8 +2,8 @@
 ifeq ($(shell uname), Darwin)
     PREFIX=arm-none-eabi-
 else
-    PREFIX=arm-none-linux-gnueabi-
-    PREFIXN=/scratch/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/arm-linux-androideabi-
+    PREFIXO=arm-none-linux-gnueabi-
+    PREFIX=/scratch/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/arm-linux-androideabi-
 endif
 DTC=../device_xilinx_kernel/scripts/dtc/dtc
 
@@ -21,13 +21,13 @@ dtb.tmp: imagefiles/zynq-$(BOARD)-portal.dts
 	rm -f dtswork.tmp
 
 zcomposite.elf: ramdisk dtb.tmp
-	$(PREFIXN)objcopy -I binary -B arm -O elf32-littlearm imagefiles/zImage z.tmp
-	$(PREFIXN)objcopy -I binary -B arm -O elf32-littlearm ramdisk.image.gz r.tmp
-	$(PREFIXN)objcopy -I binary -B arm -O elf32-littlearm dtb.tmp d.tmp
+	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm imagefiles/zImage z.tmp
+	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm ramdisk.image.gz r.tmp
+	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm dtb.tmp d.tmp
 	rm -f dtb.tmp
-	$(PREFIX)gcc -c clearreg.S
-	$(PREFIXN)ld -Ttext 0 -e 0 -o c.tmp clearreg.o
-	$(PREFIX)ld -z max-page-size=0x8000 -o zcomposite.elf -T zynq_linux_boot.lds 
+	$(PREFIXO)gcc -c clearreg.S
+	$(PREFIX)ld -Ttext 0 -e 0 -o c.tmp clearreg.o
+	$(PREFIXO)ld -z max-page-size=0x8000 -o zcomposite.elf -T zynq_linux_boot.lds 
 	#rm -f z.tmp r.tmp d.tmp c.tmp clearreg.o ramdisk.image.gz
 
 ramdisk:
@@ -39,9 +39,9 @@ xbootgen: xbootgen.c Makefile
 	gcc -g -o xbootgen xbootgen.c
 
 reserved_for_interrupts.tmp: reserved_for_interrupts.S
-	$(PREFIX)gcc -c reserved_for_interrupts.S
-	$(PREFIXN)ld -Ttext 0 -e 0 -o c.tmp reserved_for_interrupts.o
-	$(PREFIXN)objcopy -O binary -I elf32-little c.tmp reserved_for_interrupts.tmp
+	$(PREFIXO)gcc -c reserved_for_interrupts.S
+	$(PREFIX)ld -Ttext 0 -e 0 -o c.tmp reserved_for_interrupts.o
+	$(PREFIX)objcopy -O binary -I elf32-little c.tmp reserved_for_interrupts.tmp
 	rm -f c.tmp reserved_for_interrupts.o
 
 sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BOARD)/boot.bin
