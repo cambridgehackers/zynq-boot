@@ -6,7 +6,9 @@ else
 endif
 DTC=../device_xilinx_kernel/scripts/dtc/dtc
 
-all: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf xbootgen reserved_for_interrupts.tmp
+all: boot.bin sdcard
+
+boot.bin: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf xbootgen reserved_for_interrupts.tmp
 	if [ -f boot.bin ]; then mv -v boot.bin boot.bin.bak; fi
 	cp -f imagefiles/zynq_$(BOARD)_fsbl.elf zynq_fsbl.elf
 	./xbootgen zynq_fsbl.elf zcomposite.elf
@@ -40,3 +42,38 @@ reserved_for_interrupts.tmp: reserved_for_interrupts.S
 	$(PREFIX)ld -Ttext-segment 0 -e 0 -o c.tmp reserved_for_interrupts.o
 	$(PREFIX)objcopy -O binary -I elf32-little c.tmp reserved_for_interrupts.tmp
 	rm -f c.tmp reserved_for_interrupts.o
+
+sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BOARD)/boot.bin
+	echo "Files for $(BOARD) SD Card are in $(PWD)/sdcard-$(BOARD)"
+
+.PHONY: sdcard
+
+sdcard-$(BOARD)/boot.bin:
+	mkdir -p sdcard-$(BOARD)
+	rm -f boot.bin
+	make BOARD=$(BOARD) boot.bin
+	mv boot.bin sdcard-$(BOARD)/boot.bin
+
+filesystems/system-130710.img.bz2:
+	mkdir -p filesystems
+	curl 'https://dl.dropboxusercontent.com/u/108092026/xbsv/system-130710.img.bz2' > filesystems/system-130710.img.bz2
+
+filesystems/userdata.img.bz2:
+	mkdir -p filesystems
+	curl 'https://dl.dropboxusercontent.com/u/108092026/xbsv/userdata.img.bz2' > filesystems/userdata.img.bz2
+
+sdcard-$(BOARD)/system.img: filesystems/system-130710.img.bz2
+	mkdir -p sdcard-$(BOARD)
+	bzcat filesystems/system-130710.img.bz2 > sdcard-$(BOARD)/system.img
+
+ifeq ($(shell uname), Darwin)
+sdcard-$(BOARD)/userdata.img: filesystems/userdata.img.bz2
+	mkdir -p sdcard-$(BOARD)
+	bzcat filesystems/userdata.img.bz2 > sdcard-$(BOARD)/userdata.img
+else
+sdcard-$(BOARD)/userdata.img: filesystems/userdata.img.bz2
+	mkdir -p sdcard-$(BOARD)
+	# make a 100MB empty filesystem
+	dd if=/dev/zero bs=1k count=102400 of=sdcard-$(BOARD)/userdata.img
+	mkfs -F -t ext4 sdcard-$(BOARD)/userdata.img
+endif
