@@ -56,11 +56,11 @@ sdcard-$(BOARD)/boot.bin:
 
 filesystems/system-130710.img.bz2:
 	mkdir -p filesystems
-	curl 'https://dl.dropboxusercontent.com/u/108092026/xbsv/system-130710.img.bz2' > filesystems/system-130710.img.bz2
+	wget 'https://dl.dropboxusercontent.com/u/108092026/xbsv/system-130710.img.bz2' -O filesystems/system-130710.img.bz2
 
 filesystems/userdata.img.bz2:
 	mkdir -p filesystems
-	curl 'https://dl.dropboxusercontent.com/u/108092026/xbsv/userdata.img.bz2' > filesystems/userdata.img.bz2
+	wget 'https://dl.dropboxusercontent.com/u/108092026/xbsv/userdata.img.bz2' -O filesystems/userdata.img.bz2
 
 sdcard-$(BOARD)/system.img: filesystems/system-130710.img.bz2
 	mkdir -p sdcard-$(BOARD)
