@@ -25,10 +25,12 @@ zcomposite.elf: ramdisk dtb.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm ramdisk.image.gz r.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm dtb.tmp d.tmp
 	rm -f dtb.tmp
-	$(PREFIXO)gcc -c clearreg.S
-	$(PREFIX)ld -Ttext 0 -e 0 -o c.tmp clearreg.o
+	$(PREFIX)gcc -c clearreg.S
+	$(PREFIX)ld -z noexecstack -Ttext 0 -e 0 -o c.tmp clearreg.o
+	$(PREFIX)objcopy -I elf32-littlearm -O binary c.tmp c1.tmp
+	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm c1.tmp c.tmp
 	$(PREFIXO)ld -z max-page-size=0x8000 -o zcomposite.elf -T zynq_linux_boot.lds 
-	#rm -f z.tmp r.tmp d.tmp c.tmp clearreg.o ramdisk.image.gz
+	#rm -f z.tmp r.tmp d.tmp c.tmp c1.tmp clearreg.o ramdisk.image.gz
 
 ramdisk:
 	cd data; chmod 644 *.rc *.prop; (find . -name unused -o -print | cpio -H newc -o | gzip -9 -n >../ramdisk.image.temp)
