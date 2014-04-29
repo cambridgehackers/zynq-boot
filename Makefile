@@ -13,7 +13,7 @@ boot.bin: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf xbootgen reserved_for
 	if [ -f boot.bin ]; then mv -v boot.bin boot.bin.bak; fi
 	cp -f imagefiles/zynq_$(BOARD)_fsbl.elf zynq_fsbl.elf
 	./xbootgen zynq_fsbl.elf zcomposite.elf
-	rm -f zynq_fsbl.elf zcomposite.elf reserved_for_interrupts.tmp
+	#rm -f zynq_fsbl.elf zcomposite.elf reserved_for_interrupts.tmp
 
 dtb.tmp: imagefiles/zynq-$(BOARD)-portal.dts
 	macbyte=`echo $(USER) | md5sum | cut -c 1-2`; sed s/73/$$macbyte/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
@@ -29,7 +29,7 @@ zcomposite.elf: ramdisk dtb.tmp
 	$(PREFIX)ld -z noexecstack -Ttext 0 -e 0 -o c.tmp clearreg.o
 	$(PREFIX)objcopy -I elf32-littlearm -O binary c.tmp c1.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm c1.tmp c.tmp
-	$(PREFIXO)ld -z max-page-size=0x8000 -o zcomposite.elf -T zynq_linux_boot.lds 
+	$(PREFIX)ld -M -e 0x1008000 -z max-page-size=0x8000 -o zcomposite.elf --script zynq_linux_boot.lds r.tmp d.tmp c.tmp z.tmp >foo.map
 	#rm -f z.tmp r.tmp d.tmp c.tmp c1.tmp clearreg.o ramdisk.image.gz
 
 ramdisk:
