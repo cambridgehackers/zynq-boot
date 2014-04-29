@@ -3,6 +3,7 @@ ifeq ($(shell uname), Darwin)
     PREFIX=arm-none-eabi-
 else
     PREFIX=arm-none-linux-gnueabi-
+    PREFIXN=/scratch/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/arm-linux-androidea
 endif
 DTC=../device_xilinx_kernel/scripts/dtc/dtc
 
@@ -20,14 +21,14 @@ dtb.tmp: imagefiles/zynq-$(BOARD)-portal.dts
 	rm -f dtswork.tmp
 
 zcomposite.elf: ramdisk dtb.tmp
-	$(PREFIX)objcopy -I binary -O elf32-little imagefiles/zImage z.tmp
-	$(PREFIX)objcopy -I binary -O elf32-little ramdisk.image.gz r.tmp
-	$(PREFIX)objcopy -I binary -O elf32-little dtb.tmp d.tmp
+	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm imagefiles/zImage z.tmp
+	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm ramdisk.image.gz r.tmp
+	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm dtb.tmp d.tmp
 	rm -f dtb.tmp
 	$(PREFIX)gcc -c clearreg.S
 	$(PREFIX)ld -Ttext-segment 0 -e 0 -o c.tmp clearreg.o
-	$(PREFIX)ld --accept-unknown-input-arch  -z max-page-size=0x8000 -o zcomposite.elf -T zynq_linux_boot.lds 
-	rm -f z.tmp r.tmp d.tmp c.tmp clearreg.o ramdisk.image.gz
+	$(PREFIX)ld -z max-page-size=0x8000 -o zcomposite.elf -T zynq_linux_boot.lds 
+	#rm -f z.tmp r.tmp d.tmp c.tmp clearreg.o ramdisk.image.gz
 
 ramdisk:
 	cd data; chmod 644 *.rc *.prop; (find . -name unused -o -print | cpio -H newc -o | gzip -9 -n >../ramdisk.image.temp)
