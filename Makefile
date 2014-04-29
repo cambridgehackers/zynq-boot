@@ -71,7 +71,7 @@ sdcard-$(BOARD)/userdata.img: filesystems/userdata.img.bz2
 	mkdir -p sdcard-$(BOARD)
 	bzcat filesystems/userdata.img.bz2 > sdcard-$(BOARD)/userdata.img
 else
-sdcard-$(BOARD)/userdata.img: filesystems/userdata.img.bz2
+sdcard-$(BOARD)/userdata.img:
 	mkdir -p sdcard-$(BOARD)
 	# make a 100MB empty filesystem
 	dd if=/dev/zero bs=1k count=102400 of=sdcard-$(BOARD)/userdata.img
