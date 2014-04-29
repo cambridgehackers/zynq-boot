@@ -39,7 +39,7 @@ xbootgen: xbootgen.c Makefile
 	gcc -g -o xbootgen xbootgen.c
 
 reserved_for_interrupts.tmp: reserved_for_interrupts.S
-	$(PREFIXO)gcc -c reserved_for_interrupts.S
+	$(PREFIX)gcc -c reserved_for_interrupts.S
 	$(PREFIX)ld -Ttext 0 -e 0 -o c.tmp reserved_for_interrupts.o
 	$(PREFIX)objcopy -O binary -I elf32-little c.tmp reserved_for_interrupts.tmp
 	rm -f c.tmp reserved_for_interrupts.o
