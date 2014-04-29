@@ -40,9 +40,9 @@ xbootgen: xbootgen.c Makefile
 
 reserved_for_interrupts.tmp: reserved_for_interrupts.S
 	$(PREFIX)gcc -c reserved_for_interrupts.S
-	$(PREFIX)ld -Ttext 0 -e 0 -o c.tmp reserved_for_interrupts.o
-	$(PREFIX)objcopy -O binary -I elf32-little c.tmp reserved_for_interrupts.tmp
-	rm -f c.tmp reserved_for_interrupts.o
+	$(PREFIX)ld -Ttext 0 -e 0 -o i.tmp reserved_for_interrupts.o
+	$(PREFIX)objcopy -O binary -I elf32-little i.tmp reserved_for_interrupts.tmp
+	rm -f i.tmp reserved_for_interrupts.o
 
 sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BOARD)/boot.bin
 	echo "Files for $(BOARD) SD Card are in $(PWD)/sdcard-$(BOARD)"
