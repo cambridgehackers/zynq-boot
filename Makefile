@@ -31,7 +31,8 @@ zcomposite.elf: ramdisk dtb.tmp
 
 ramdisk:
 	cd data; chmod 644 *.rc *.prop; (find . -name unused -o -print | cpio -H newc -o | gzip -9 -n >../ramdisk.image.temp)
-	cat ramdisk.image.temp /dev/zero | dd of=ramdisk.image.gz count=256 ibs=1024
+	ls -l ramdisk.image.temp
+	cat ramdisk.image.temp /dev/zero | dd of=ramdisk.image.gz count=512 ibs=1024 obs=1024
 	rm -f ramdisk.image.temp
 
 xbootgen: xbootgen.c Makefile
