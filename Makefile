@@ -47,6 +47,7 @@ reserved_for_interrupts.tmp: reserved_for_interrupts.S
 	rm -f i.tmp reserved_for_interrupts.o
 
 sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BOARD)/boot.bin
+	cp -v imagefiles/zynqportal.ko imagefiles/portalmem.ko sdcard-$(BOARD)/
 	echo "Files for $(BOARD) SD Card are in $(PWD)/sdcard-$(BOARD)"
 
 .PHONY: sdcard
