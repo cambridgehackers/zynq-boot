@@ -10,7 +10,11 @@ DTC=../device_xilinx_kernel/scripts/dtc/dtc
 all: boot.bin sdcard
 
 clean:
+	## '"make realclean" to remove downloaded files
 	rm -fr sdcard-* boot.bin *.tmp *.elf *.gz *.hex *.o foo.map xbootgen
+
+realclean: clean
+	rm -fr filesystems/*
 
 boot.bin: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf xbootgen reserved_for_interrupts.tmp
 	if [ -f boot.bin ]; then mv -v boot.bin boot.bin.bak; fi
