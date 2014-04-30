@@ -2,8 +2,8 @@
 ifeq ($(shell uname), Darwin)
     PREFIX=arm-none-eabi-
 else
-    NDK_DIR=$(shell dirname `which ndk-build`)
-    PREFIX=$(NDK_DIR)/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/arm-linux-androideabi-
+    NDK_OBJDUMP=$(shell ndk-which objdump)
+    PREFIX=$(shell dirname $(NDK_OBJDUMP))/arm-linux-androideabi-
 endif
 DTC=../device_xilinx_kernel/scripts/dtc/dtc
 
