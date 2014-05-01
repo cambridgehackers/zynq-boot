@@ -76,6 +76,7 @@ filesystems/userdata.img.bz2:
 sdcard-$(BOARD)/system.img: filesystems/system-130710.img.bz2
 	mkdir -p sdcard-$(BOARD)
 	bzcat filesystems/system-130710.img.bz2 > sdcard-$(BOARD)/system.img
+	(cd sdcard-$(BOARD); md5sum -c ../imagefiles/filesystems.md5sum)
 
 ifeq ($(shell uname), Darwin)
 sdcard-$(BOARD)/userdata.img: filesystems/userdata.img.bz2
