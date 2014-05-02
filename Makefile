@@ -28,6 +28,8 @@ dtb.tmp: imagefiles/zynq-$(BOARD)-portal.dts
 	rm -f dtswork.tmp
 
 zcomposite.elf: ramdisk dtb.tmp
+	echo "******** PRINT GCC CONFIGURE OPTIONS *******"
+	$(PREFIX)gcc -v 2>&1
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm imagefiles/zImage z.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm ramdisk.image.gz r.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm dtb.tmp d.tmp
