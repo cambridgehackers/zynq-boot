@@ -1,8 +1,9 @@
 #
+#NDKPATH=/scratch/android-ndk-r9d/
 ifeq ($(shell uname), Darwin)
     PREFIX=arm-none-eabi-
 else
-    NDK_OBJDUMP=$(shell ndk-which objdump)
+    NDK_OBJDUMP=$(shell $(NDKPATH)ndk-which objdump)
     PREFIX=$(shell dirname $(NDK_OBJDUMP))/arm-linux-androideabi-
 endif
 DTC=../device_xilinx_kernel/scripts/dtc/dtc
