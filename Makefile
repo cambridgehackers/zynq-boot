@@ -43,6 +43,7 @@ zcomposite.elf: ramdisk dtb.tmp
 	#rm -f z.tmp r.tmp d.tmp c.tmp c1.tmp clearreg.o ramdisk.image.gz
 
 ramdisk:
+	find data -name \* -exec touch -t 201405010000 {} \;
 	cd data; chmod 644 *.rc *.prop; (find . -name unused -o -print | cpio -H newc -o | gzip -9 -n >../ramdisk.image.temp)
 	cat ramdisk.image.temp /dev/zero | dd of=ramdisk.image.gz count=256 ibs=1024
 	rm -f ramdisk.image.temp
