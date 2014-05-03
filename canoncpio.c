@@ -66,11 +66,10 @@ int main()
 {
     Cpio_header header;
     uint32_t ino, nlen, newi;
-    uint8_t data[MAX_SEGMENT];
-    uint8_t temp[MAX_FILENAME];
+    uint8_t data[MAX_SEGMENT], temp[MAX_FILENAME];
     int fd = 0; //open("xx.old", O_RDONLY);
 
-    while (1) {
+    do {
         read(fd, &header, sizeof(header));
         memcpy(temp, header.c_magic, sizeof(header.c_magic));
         temp[sizeof(header.c_magic)] = 0;
@@ -101,17 +100,20 @@ int main()
         memcpy(header.c_mtime, data, sizeof(header.c_mtime));
         write(1, &header, sizeof(header));
         write(1, temp, nlen);
+        /* read remainder of file */
+        if (!strcmp(temp, "TRAILER!!!"))
+            len = 9999999; /* HACK */
         /* read alignment filler and data bytes */
         while (len > 0) {
             int plen = len;
             if (plen > sizeof(data))
                 plen = sizeof(data);
-            read(fd, data, plen);
-            write(1, data, plen);
-            len -= plen;
+            int rc = read(fd, data, plen);
+            if (rc == 0)
+                break;
+            write(1, data, rc);
+            len -= rc;
         }
-        if (!strcmp(temp, "TRAILER!!!"))
-            break;
-    }
+    } while (strcmp(temp, "TRAILER!!!"));
     return 0;
 }

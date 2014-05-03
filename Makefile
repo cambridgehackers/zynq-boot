@@ -12,7 +12,7 @@ all: boot.bin sdcard
 
 clean:
 	## '"make realclean" to remove downloaded files
-	rm -fr sdcard-* boot.bin *.tmp *.elf *.gz *.hex *.o foo.map xbootgen
+	rm -fr sdcard-* boot.bin *.tmp *.elf *.gz *.hex *.o foo.map xbootgen canoncpio
 
 realclean: clean
 	rm -fr filesystems/*
@@ -48,7 +48,7 @@ canoncpio: canoncpio.c
 ramdisk: canoncpio
 	cd data; chmod 644 *.rc *.prop
 	#find data -name \* -exec touch -h -t 201405010000 {} \;
-	cd data; (find . -name unused -o -print | cpio -H newc -o | canoncpio | gzip -9 -n >../ramdisk.image.temp)
+	cd data; (find . -name unused -o -print | cpio -H newc -o | ./canoncpio | gzip -9 -n >../ramdisk.image.temp)
 	cat ramdisk.image.temp /dev/zero | dd of=ramdisk.image.gz count=256 ibs=1024
 	rm -f ramdisk.image.temp
 
