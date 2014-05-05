@@ -1,5 +1,5 @@
 #
-#NDKPATH=/scratch/android-ndk-r9d/
+NDKPATH=/scratch/android-ndk-r9d/
 ifeq ($(shell uname), Darwin)
     PREFIX=arm-none-eabi-
 else
@@ -54,6 +54,9 @@ ramdisk: canoncpio
 
 xbootgen: xbootgen.c Makefile
 	gcc -g -o xbootgen xbootgen.c
+
+dumpbootbin: dumpbootbin.c Makefile
+	gcc -g -o dumpbootbin dumpbootbin.c
 
 reserved_for_interrupts.tmp: reserved_for_interrupts.S
 	$(PREFIX)gcc -c reserved_for_interrupts.S
