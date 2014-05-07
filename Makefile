@@ -1,5 +1,5 @@
 #
-NDKPATH=/scratch/android-ndk-r9d/
+#NDKPATH=/scratch/android-ndk-r9d/
 ifeq ($(shell uname), Darwin)
     PREFIX=arm-none-eabi-
 else
@@ -46,9 +46,9 @@ canoncpio: canoncpio.c
 	gcc -o canoncpio canoncpio.c
 
 ramdisk: canoncpio
-	cd data; chmod 644 *.rc *.prop
-	#find data -name \* -exec touch -h -t 201405010000 {} \;
-	cd data; (find . -name unused -o -print | cpio -H newc -o | ./canoncpio | gzip -9 -n >../ramdisk.image.temp)
+	chmod 644 data/*.rc data/*.prop
+	cd data; (find . -name unused -o -print | cpio -H newc -o >../ramdisk.image.temp1)
+	./canoncpio < ramdisk.image.temp1 | gzip -9 -n >ramdisk.image.temp
 	cat ramdisk.image.temp /dev/zero | dd of=ramdisk.image.gz count=256 ibs=1024
 	rm -f ramdisk.image.temp
 

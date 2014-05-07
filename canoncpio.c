@@ -52,7 +52,7 @@ typedef struct {
 
 static uint32_t ino_map[MAX_FILECOUNT];
 static int ino_map_index = 0;
-static uint32_t canon_time = 0x5361c6c0; // 2014 May 1
+static uint8_t canon_time[8] = "5361C6C0"; // 2014 May 1
 
 static uint32_t get_int32(uint8_t *data)
 {
@@ -92,12 +92,11 @@ int main()
         int len = ALIGN32(sizeof(header) + nlen)
               + ALIGN32(get_int32(header.c_filesize)) - sizeof(header) - nlen;
         fprintf(stderr, "name %s\t\t\t %x new %x mtime %x\n", temp, ino, newi+1, get_int32(header.c_mtime));
-        sprintf(data, "%08x", newi+1);
+        sprintf(data, "%08X", newi+1);
         if (ino)
             memcpy(header.c_ino, data, sizeof(header.c_ino));
         /* Set file modification time to a constant */
-        sprintf(data, "%08x", canon_time);
-        memcpy(header.c_mtime, data, sizeof(header.c_mtime));
+        memcpy(header.c_mtime, canon_time, sizeof(header.c_mtime));
         write(1, &header, sizeof(header));
         write(1, temp, nlen);
         /* read remainder of file */
