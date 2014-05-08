@@ -1,11 +1,7 @@
 #
 #NDKPATH=/scratch/android-ndk-r9d/
-ifeq ($(shell uname), Darwin)
-    PREFIX=arm-none-eabi-
-else
-    NDK_OBJDUMP=$(shell $(NDKPATH)ndk-which objdump)
-    PREFIX=$(shell dirname $(NDK_OBJDUMP))/arm-linux-androideabi-
-endif
+NDK_OBJDUMP=$(shell $(NDKPATH)ndk-which objdump)
+PREFIX=$(NDK_OBJDUMP:%-objdump=%-)
 DTC=../device_xilinx_kernel/scripts/dtc/dtc
 
 all: boot.bin sdcard
