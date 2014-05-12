@@ -35,3 +35,9 @@ To build a boot.bin for a zc702:
 To build a boot.bin for a zc706:
    make BOARD=zc706 all
 
+Building on Mac
+===============
+1) clone device_xilinx_kernel.git
+2) clone cambridgehackers/mac_linux_headers.git
+3) use mac_linux_headers/compile.sh for running 'make' on device_xilinx_kernel
+    (this will create a usable dts executable for creating boot.bin from this repo)
