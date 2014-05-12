@@ -67,6 +67,8 @@ int i;
 int main(int argc, char *argv[])
 {
     BootPartitionHeader part_data[20], *ppart = part_data;
+    int verbose = 0;
+    int file_counter = 0, dumpfd = -1;
 
     if (argc != 2 || (fd = open (argv[1], O_RDONLY)) < 0) {
         printf ("xbootbin <filename>\n");
@@ -75,7 +77,6 @@ int main(int argc, char *argv[])
     lseek(fd, IMAGE_PHDR_OFFSET, SEEK_SET);
     uint32_t part_offset;
     read(fd, &part_offset, sizeof(part_offset));
-printf("[%s:%d] off %x\n", __FUNCTION__, __LINE__, part_offset);
     lseek(fd, part_offset, SEEK_SET);
     while (!end_of_file) {
         read(fd, ppart, sizeof(*ppart));
@@ -97,8 +98,28 @@ printf("[%s:%d] off %x\n", __FUNCTION__, __LINE__, part_offset);
         printf("        PartitionAttr: %3x; ", part_data[pindex].PartitionAttr);
         printf("SectionCount: %7x\n", part_data[pindex].SectionCount);
         lseek(fd, part_data[pindex].PartitionStart << 2, SEEK_SET);
-        int rlen = read(fd, buffer, sizeof(buffer));
-        memdump(buffer, rlen, "DATA");
+        int len = part_data[pindex].DataWordLen << 2;
+        int first = 1;
+        if (verbose) {
+            char filename[100];
+            sprintf(filename, "xx.dump.%d", file_counter++);
+            dumpfd = creat(filename, 0666);
+            printf("dumpfile: %s\n", filename);
+        }
+        while (len > 0) {
+            int rlen = len;
+            if (rlen > sizeof(buffer))
+                 rlen = sizeof(buffer);
+            rlen = read(fd, buffer, rlen);
+            if (first)
+                memdump(buffer, rlen, "DATA");
+            first = 0;
+            len -= rlen;
+            if (verbose)
+                write(dumpfd, buffer, rlen);
+        }
+        if (verbose)
+            close(dumpfd);
         pindex++;
     }
     return 0;

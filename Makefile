@@ -30,13 +30,12 @@ zcomposite.elf: ramdisk dtb.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm imagefiles/zImage z.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm ramdisk.image.gz r.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm dtb.tmp d.tmp
-	rm -f dtb.tmp
 	$(PREFIX)gcc -c clearreg.S
 	$(PREFIX)ld -z noexecstack -Ttext 0 -e 0 -o c.tmp clearreg.o
 	$(PREFIX)objcopy -I elf32-littlearm -O binary c.tmp c1.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm c1.tmp c.tmp
 	$(PREFIX)ld -e 0x1008000 -z max-page-size=0x8000 -o zcomposite.elf --script zynq_linux_boot.lds r.tmp d.tmp c.tmp z.tmp
-	rm -f z.tmp r.tmp d.tmp c.tmp c1.tmp clearreg.o ramdisk.image.gz
+	rm -f z.tmp r.tmp d.tmp c.tmp c1.tmp clearreg.o ramdisk.image.gz dtb.tmp
 
 canoncpio: canoncpio.c
 	gcc -o canoncpio canoncpio.c
