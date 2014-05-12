@@ -1,13 +1,27 @@
+
 on early-init
-    export EXTERNAL_STORAGE /mnt/sdcard
-    mkdir /mnt/sdcard 0000 system system
-    # for backwards compatibility
-    symlink /mnt/sdcard /sdcard
+    mount debugfs debugfs /sys/kernel/debug
+
+on init
+    # See storage config details at http://source.android.com/tech/storage/
+    mkdir /mnt/media_rw/sdcard 0700 media_rw media_rw
+    mkdir /storage/sdcard 0700 root root
+
+    export EXTERNAL_STORAGE /storage/sdcard
+
+    # Support legacy paths
+    symlink /storage/sdcard /sdcard
+    symlink /storage/sdcard /mnt/sdcard
 
 on boot
+    setsebool in_qemu 1
+    restorecon /sys/qemu_trace/process_name
+    restorecon /sys/qemu_trace/state
+    restorecon /sys/qemu_trace/symbol
     setprop ARGH ARGH
     setprop net.eth0.gw 10.0.2.2
     setprop net.eth0.dns1 10.0.2.3
+    setprop net.dns1 10.0.2.3
     setprop net.gprs.local-ip 10.0.2.15
     setprop ro.radio.use-ppp no
     setprop ro.build.product generic
@@ -47,6 +61,9 @@ on boot
 # supported, and arbitrary breakage may result if you specify
 # something else.
 
+on fs
+        mount_all /fstab.goldfish
+
 service goldfish-setup /system/etc/init.goldfish.sh
     user root
     group root
@@ -76,3 +93,8 @@ service qemud /system/bin/qemud
 
 service goldfish-logcat /system/bin/logcat -Q
     oneshot
+
+# fusewrapped external sdcard daemon running as media_rw (1023)
+service fuse_sdcard /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/sdcard /storage/sdcard
+    class late_start
+    disabled

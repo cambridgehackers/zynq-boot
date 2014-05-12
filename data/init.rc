@@ -7,22 +7,15 @@
 import /init.environ.rc
 import /init.usb.rc
 import /init.${ro.hardware}.rc
-import /init.${ro.zygote}.rc
 import /init.trace.rc
 
 on early-init
     # Set init and its forked children's oom_adj.
     write /proc/1/oom_adj -16
 
-    # Apply strict SELinux checking of PROT_EXEC on mmap/mprotect calls.
-    write /sys/fs/selinux/checkreqprot 0
-
     # Set the security context for the init process.
     # This should occur before anything else (e.g. ueventd) is started.
     setcon u:r:init:s0
-
-    # Set the security context of /adb_keys if present.
-    restorecon /adb_keys
 
     start ueventd
 
@@ -33,7 +26,7 @@ on init
 
 sysclktz 0
 
-loglevel 8
+loglevel 3
 
 # Backward compatibility
     symlink /system/etc /etc
@@ -101,7 +94,6 @@ loglevel 8
     write /proc/sys/kernel/dmesg_restrict 1
     write /proc/sys/vm/mmap_min_addr 32768
     write /proc/sys/net/ipv4/ping_group_range "0 2147483647"
-    write /proc/sys/net/unix/max_dgram_qlen 300
     write /proc/sys/kernel/sched_rt_runtime_us 950000
     write /proc/sys/kernel/sched_rt_period_us 1000000
 
@@ -177,9 +169,6 @@ on post-fs
     chown system log /proc/last_kmsg
     chmod 0440 /proc/last_kmsg
 
-    # make the selinux kernel policy world-readable
-    chmod 0444 /sys/fs/selinux/policy
-
     # create the lost+found directories, so as to enforce our permissions
     mkdir /cache/lost+found 0770 root root
 
@@ -221,11 +210,8 @@ on post-fs-data
     mkdir /data/misc/zoneinfo 0775 system system
     mkdir /data/misc/vpn 0770 system vpn
     mkdir /data/misc/systemkeys 0700 system system
-    mkdir /data/misc/wifi 0770 wifi wifi
-    mkdir /data/misc/wifi/sockets 0770 wifi wifi
-    mkdir /data/misc/wifi/wpa_supplicant 0770 wifi wifi
-    mkdir /data/misc/dhcp 0770 dhcp dhcp
     # give system access to wpa_supplicant.conf for backup and restore
+    mkdir /data/misc/wifi 0770 wifi wifi
     chmod 0660 /data/misc/wifi/wpa_supplicant.conf
     mkdir /data/local 0751 root root
     mkdir /data/misc/media 0700 media media
@@ -266,12 +252,6 @@ on post-fs-data
 
     # Separate location for storing security policy files on data
     mkdir /data/security 0711 system system
-
-    # Reload policy from /data/security if present.
-    setprop selinux.reload_policy 1
-
-    # Set SELinux security contexts on upgrade or policy update.
-    restorecon_recursive /data
 
     # If there is no fs-post-data action in the init.<device>.rc file, you
     # must uncomment this line, otherwise encrypted filesystems
@@ -366,20 +346,23 @@ on boot
     chown system system /sys/kernel/ipv4/tcp_rmem_max
     chown root radio /proc/cmdline
 
+# Set these so we can remotely update SELinux policy
+    chown system system /sys/fs/selinux/load
+    chown system system /sys/fs/selinux/enforce
+
 # Define TCP buffer sizes for various networks
 #   ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
-    setprop net.tcp.buffersize.default  4096,87380,110208,4096,16384,110208
-    setprop net.tcp.buffersize.wifi     524288,1048576,2097152,262144,524288,1048576
-    setprop net.tcp.buffersize.ethernet 524288,1048576,3145728,524288,1048576,2097152
-    setprop net.tcp.buffersize.lte      524288,1048576,2097152,262144,524288,1048576
-    setprop net.tcp.buffersize.umts     58254,349525,1048576,58254,349525,1048576
-    setprop net.tcp.buffersize.hspa     40778,244668,734003,16777,100663,301990
-    setprop net.tcp.buffersize.hsupa    40778,244668,734003,16777,100663,301990
-    setprop net.tcp.buffersize.hsdpa    61167,367002,1101005,8738,52429,262114
-    setprop net.tcp.buffersize.hspap    122334,734003,2202010,32040,192239,576717
-    setprop net.tcp.buffersize.edge     4093,26280,70800,4096,16384,70800
-    setprop net.tcp.buffersize.gprs     4092,8760,48000,4096,8760,48000
-    setprop net.tcp.buffersize.evdo     4094,87380,262144,4096,16384,262144
+    setprop net.tcp.buffersize.default 4096,87380,110208,4096,16384,110208
+    setprop net.tcp.buffersize.wifi    524288,1048576,2097152,262144,524288,1048576
+    setprop net.tcp.buffersize.lte     524288,1048576,2097152,262144,524288,1048576
+    setprop net.tcp.buffersize.umts    4094,87380,110208,4096,16384,110208
+    setprop net.tcp.buffersize.hspa    4094,87380,262144,4096,16384,262144
+    setprop net.tcp.buffersize.hsupa   4094,87380,262144,4096,16384,262144
+    setprop net.tcp.buffersize.hsdpa   4094,87380,262144,4096,16384,262144
+    setprop net.tcp.buffersize.hspap   4094,87380,1220608,4096,16384,1220608
+    setprop net.tcp.buffersize.edge    4093,26280,35040,4096,16384,35040
+    setprop net.tcp.buffersize.gprs    4092,8760,11680,4096,8760,11680
+    setprop net.tcp.buffersize.evdo    4094,87380,262144,4096,16384,262144
 
     class_start core
     class_start main
@@ -424,13 +407,6 @@ service ueventd /sbin/ueventd
     critical
     seclabel u:r:ueventd:s0
 
-service logd /system/bin/logd
-    class core
-    socket logd stream 0666 logd logd
-    socket logdr seqpacket 0666 logd logd
-    socket logdw dgram 0222 logd logd
-    seclabel u:r:logd:s0
-
 service healthd /sbin/healthd
     class core
     critical
@@ -441,19 +417,22 @@ service healthd-charger /sbin/healthd -n
     critical
     seclabel u:r:healthd:s0
 
+on property:selinux.reload_policy=1
+    restart ueventd
+    restart installd
+
 service console /system/bin/sh
     class core
     console
     disabled
     user shell
     group log
-    seclabel u:r:shell:s0
 
 on property:ro.debuggable=1
     start console
 
 # adbd is controlled via property triggers in init.<platform>.usb.rc
-service adbd /sbin/adbd --root_seclabel=u:r:su:s0
+service adbd /sbin/adbd
     class core
     socket adbd stream 660 system system
     disabled
@@ -468,11 +447,11 @@ service servicemanager /system/bin/servicemanager
     user system
     group system
     critical
-    #onrestart restart healthd
-    #onrestart restart zygote
+    onrestart restart healthd
+    onrestart restart zygote
     onrestart restart media
-    #onrestart restart surfaceflinger
-    #onrestart restart drm
+    onrestart restart surfaceflinger
+    onrestart restart drm
 
 service vold /system/bin/vold
     class core
@@ -488,9 +467,6 @@ service netd /system/bin/netd
 service debuggerd /system/bin/debuggerd
     class main
 
-service debuggerd64 /system/bin/debuggerd64
-    class main
-
 service ril-daemon /system/bin/rild
     class main
     socket rild stream 660 root radio
@@ -502,8 +478,15 @@ service surfaceflinger /system/bin/surfaceflinger
     class main
     user system
     group graphics drmrpc
-    disabled
     onrestart restart zygote
+
+service zygote /system/bin/app_process -Xzygote /system/bin --zygote --start-system-server
+    class main
+    socket zygote stream 660 root system
+    onrestart write /sys/android_power/request_state wake
+    onrestart write /sys/power/state on
+    onrestart restart media
+    onrestart restart netd
 
 service drm /system/bin/drmserver
     class main

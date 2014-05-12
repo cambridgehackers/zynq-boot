@@ -3,6 +3,3 @@
 /dev/qemu_pipe            0666   system     system
 /dev/ttyS*                0666   system     system
 /proc                     0666   system     system
-#/dev/fpga0                0666   system     system
-/dev/i2c-0                0666   system     system
-/dev/i2c-1                0666   system     system
