@@ -3,6 +3,7 @@
 NDK_OBJDUMP=$(shell $(NDKPATH)ndk-which objdump)
 PREFIX=$(NDK_OBJDUMP:%-objdump=%-)
 DTC=../device_xilinx_kernel/scripts/dtc/dtc
+KERNELID=3.9.0-133035-g0c6e124
 
 all: boot.bin sdcard
 
@@ -61,6 +62,7 @@ reserved_for_interrupts.tmp: reserved_for_interrupts.S
 
 sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BOARD)/boot.bin
 	cp -v imagefiles/zynqportal.ko imagefiles/portalmem.ko imagefiles/timelimit sdcard-$(BOARD)/
+	mkdir sdcard-$(BOARD)/$(KERNELID)
 	echo "Files for $(BOARD) SD Card are in $(PWD)/sdcard-$(BOARD)"
 
 .PHONY: sdcard
