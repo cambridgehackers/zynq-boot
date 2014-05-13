@@ -5,7 +5,41 @@ PREFIX=$(NDK_OBJDUMP:%-objdump=%-)
 DTC=../device_xilinx_kernel/scripts/dtc/dtc
 KERNELID=3.9.0-133035-g0c6e124
 
-all: boot.bin sdcard
+targetnames = bootbin sdcard all
+
+all:
+	@echo "Please type one of the following:"
+	@echo "    make bootbin.zedboard"
+	@echo "    make sdcard.zedboard"
+	@echo "    make all.zedboard"
+	@echo "    make bootbin.zc702"
+	@echo "    make sdcard.zc702"
+	@echo "    make all.zc702"
+	@echo "    make bootbin.zc706"
+	@echo "    make sdcard.zc706"
+	@echo "    make all.zc706"
+
+#################################################################################################
+# zedboard
+zedboardtargets = $(addsuffix .zedboard, $(targetnames))
+zedboardtargets: $(zedboardtargets)
+$(zedboardtargets):
+	make BOARD=zedboard real.$(basename $@)
+#################################################################################################
+# zc702
+zc702targets = $(addsuffix .zc702, $(targetnames))
+zc702targets: $(zc702targets)
+$(zc702targets):
+	make BOARD=zc702 real.$(basename $@)
+#################################################################################################
+# zc706
+zc706targets = $(addsuffix .zc706, $(targetnames))
+zc706targets: $(zc706targets)
+$(zc706targets):
+	make BOARD=zc706 real.$(basename $@)
+#################################################################################################
+
+real.all: real.bootbin real.sdcard
 
 clean:
 	## '"make realclean" to remove downloaded files
@@ -14,7 +48,7 @@ clean:
 realclean: clean
 	rm -fr filesystems/*
 
-boot.bin: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf xbootgen reserved_for_interrupts.tmp
+real.bootbin: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf xbootgen reserved_for_interrupts.tmp
 	if [ -f boot.bin ]; then mv -v boot.bin boot.bin.bak; fi
 	cp -f imagefiles/zynq_$(BOARD)_fsbl.elf zynq_fsbl.elf
 	./xbootgen zynq_fsbl.elf zcomposite.elf
@@ -60,17 +94,17 @@ reserved_for_interrupts.tmp: reserved_for_interrupts.S
 	$(PREFIX)objcopy -O binary -I elf32-little i.tmp reserved_for_interrupts.tmp
 	rm -f i.tmp reserved_for_interrupts.o
 
-sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BOARD)/boot.bin
+real.sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BOARD)/boot.bin
 	cp -v imagefiles/zynqportal.ko imagefiles/portalmem.ko imagefiles/timelimit sdcard-$(BOARD)/
 	[ -e sdcard-$(BOARD)/$(KERNELID) ] || mkdir sdcard-$(BOARD)/$(KERNELID)
 	echo "Files for $(BOARD) SD Card are in $(PWD)/sdcard-$(BOARD)"
 
-.PHONY: sdcard
+.PHONY: real.sdcard real.bootbin real.all
 
 sdcard-$(BOARD)/boot.bin:
 	mkdir -p sdcard-$(BOARD)
 	rm -f boot.bin
-	make BOARD=$(BOARD) boot.bin
+	make BOARD=$(BOARD) real.bootbin
 	mv boot.bin sdcard-$(BOARD)/boot.bin
 
 filesystems/system-130710.img.bz2:

@@ -26,14 +26,20 @@ The boot.bin file contains:
 The boot.bin is board-specific, because the first stage boot loader
 (fsbl) and the devicetree are both board-specific.
 
-To build a boot.bin for a zedboard:
-   make BOARD=zedboard all
+To see all possible make targets, please just type:
+   make
 
-To build a boot.bin for a zc702:
-   make BOARD=zc702 all
+To build a everything for a zedboard:
+   make all.zedboard
 
-To build a boot.bin for a zc706:
-   make BOARD=zc706 all
+To build just a boot.bin for a zedboard:
+   make bootbin.zedboard
+
+To build a everything for a zc702:
+   make all.zc702
+
+To build a everything for a zc706:
+   make all.zc706
 
 Building on Mac
 ===============
