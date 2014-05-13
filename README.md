@@ -41,3 +41,14 @@ Building on Mac
 2) clone cambridgehackers/mac_linux_headers.git
 3) use mac_linux_headers/compile.sh for running 'make' on device_xilinx_kernel
     (this will create a usable dts executable for creating boot.bin from this repo)
+
+Building just the devicetree compiler needed for zynq-boot (when you don't want to build the entire kernel):
+===================================================
+    git clone https://github.com/cambridgehackers/device_xilinx_kernel.git
+    cd device_xilinx_kernel/
+    git checkout remotes/origin/xilinx-v14.6.02-qrc1 -b xilinx-v14.6.02-qrc1
+    make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- xilinx_zynq_portal_defconfig
+    make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- M=scripts/dtc
+
+Even though the build complains about a missing arm-none-linux-gnueabi-gcc,
+it still builds the executable scripts/dtc/dtc correctly.

@@ -43,7 +43,7 @@ canoncpio: canoncpio.c
 
 ramdisk: canoncpio
 	chmod 644 data/*.rc data/*.prop
-	cd data; (find . -name unused -o -print | cpio -H newc -o >../ramdisk.image.temp1)
+	cd data; (find . -name unused -o -print | sort | cpio -H newc -o >../ramdisk.image.temp1)
 	./canoncpio < ramdisk.image.temp1 | gzip -9 -n >ramdisk.image.temp
 	cat ramdisk.image.temp /dev/zero | dd of=ramdisk.image.gz count=256 ibs=1024
 	rm -f ramdisk.image.temp ramdisk.image.temp1

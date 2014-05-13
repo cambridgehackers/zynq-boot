@@ -67,7 +67,7 @@ int i;
 int main(int argc, char *argv[])
 {
     BootPartitionHeader part_data[20], *ppart = part_data;
-    int verbose = 0;
+    int verbose = 1;
     int file_counter = 0, dumpfd = -1;
 
     if (argc != 2 || (fd = open (argv[1], O_RDONLY)) < 0) {
