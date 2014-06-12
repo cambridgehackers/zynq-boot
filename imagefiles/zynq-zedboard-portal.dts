@@ -187,7 +187,7 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 			m24c02_eeprom@52 {
-				compatible = "at,24c02";
+				compatible = "zzzat,zzz24c02";
 				reg = <0x52>;
 			};
 		};
@@ -204,7 +204,7 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 			adv7511@39 {
-				compatible = "adv7511";
+				compatible = "zzzzadv7511";
 				reg = <0x39>;
 				format = "disconnected";
 			};
