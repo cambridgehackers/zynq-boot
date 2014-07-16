@@ -2,7 +2,7 @@
 #NDKPATH=/scratch/android-ndk-r9d/
 NDK_OBJDUMP=$(shell $(NDKPATH)ndk-which objdump)
 PREFIX=$(NDK_OBJDUMP:%-objdump=%-)
-DTC=../device_xilinx_kernel/scripts/dtc/dtc
+DTC=./bin/dtc
 KERNELID=3.9.0-133035-g0c6e124
 
 targetnames = bootbin sdcard all
