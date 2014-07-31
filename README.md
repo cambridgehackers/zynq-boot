@@ -50,8 +50,8 @@ Building on Mac
 
 Building just the devicetree compiler needed for zynq-boot (when you don't want to build the entire kernel):
 ===================================================
-    git clone https://github.com/cambridgehackers/device_xilinx_kernel.git
-    cd device_xilinx_kernel/
+    git clone https://github.com/cambridgehackers/linux-xlnx.git
+    cd linux-xlnx/
     git checkout origin/xbsv-2014.04 -b xbsv-2014.04
     make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- xilinx_zynq_portal_defconfig
     make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- M=scripts/dtc
