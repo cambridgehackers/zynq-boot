@@ -14,7 +14,7 @@ The boot.bin file contains:
     (you need to use the Xilinx IDE to create a project and then use their
     Codesourcery gcc toolchain to compile).
 2) zImage.  This is the linux kernel, compiled from:
-    github.com:cambridgehackers/device_xilinx_kernel.git
+    github.com:cambridgehackers/linux-xlnx.git
 3) ramdisk.  This is created from the files in the 'data/' directory
     of this git repo.
 4) devicetree.dtb.  This is the devicetree specification of peripherial
@@ -41,11 +41,29 @@ To build a everything for a zc702:
 To build a everything for a zc706:
    make all.zc706
 
-Building on Mac
-===============
-1) clone device_xilinx_kernel.git
+Compiling the linux kernel on Linux:
+====================================
+
+#1)
+   git clone git@github.com:cambridgehackers/linux-xlnx.git
+#2)
+   cd linux-xlnx/
+#3)
+   git checkout remotes/origin/xbsv-2014.04 -b xbsv-2014.04
+#4)
+   make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- xilinx_zynq_portal_defconfig  
+#5)
+   make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi-   
+#6)
+   cp arch/arm/boot/zImage ../zynq-boot/imagefiles/zImage  
+
+Compiling the xbsv device drivers on linux:
+
+Compiling the linux kernel on Mac:
+==================================
+1) clone linux-xlnx.git
 2) clone cambridgehackers/mac_linux_headers.git
-3) use mac_linux_headers/compile.sh for running 'make' on device_xilinx_kernel
+3) use mac_linux_headers/compile.sh for running 'make' on linux-xlnx
     (this will create a usable dts executable for creating boot.bin from this repo)
 
 Building just the devicetree compiler needed for zynq-boot (when you don't want to build the entire kernel):
