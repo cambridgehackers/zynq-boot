@@ -3,7 +3,7 @@
 NDK_OBJDUMP=$(shell $(NDKPATH)ndk-which objdump)
 PREFIX=$(NDK_OBJDUMP:%-objdump=%-)
 DTC=./bin/dtc
-KERNELID=3.9.0-133035-g0c6e124
+KERNELID=3.9.0-00054-g7b6edac
 
 targetnames = bootbin sdcard all
 
