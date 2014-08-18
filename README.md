@@ -114,3 +114,8 @@ the entire kernel:
 
 Even though the build complains about a missing arm-none-linux-gnueabi-gcc,
 it still builds the executable scripts/dtc/dtc correctly.
+
+Support for Mini-ITX
+======================
+Support has been added for the Avnet 7Z100 Mini-ITX development kit:
+    http://www.zedboard.org/product/mini-itx

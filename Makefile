@@ -18,6 +18,9 @@ all:
 	@echo "    make bootbin.zc706"
 	@echo "    make sdcard.zc706"
 	@echo "    make all.zc706"
+	@echo "    make bootbin.miniitx"
+	@echo "    make sdcard.miniitx"
+	@echo "    make all.miniitx"
 
 #################################################################################################
 # zedboard
@@ -37,6 +40,12 @@ zc706targets = $(addsuffix .zc706, $(targetnames))
 zc706targets: $(zc706targets)
 $(zc706targets):
 	make BOARD=zc706 real.$(basename $@)
+#################################################################################################
+# miniitx
+miniitxtargets = $(addsuffix .miniitx, $(targetnames))
+miniitxtargets: $(miniitxtargets)
+$(miniitxtargets):
+	make BOARD=miniitx real.$(basename $@)
 #################################################################################################
 
 real.all: real.bootbin real.sdcard
