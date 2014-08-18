@@ -73,11 +73,11 @@ sdcard-$(BOARD)/boot.bin:
 
 filesystems/system-130710.img.bz2:
 	mkdir -p filesystems
-	wget 'https://dl.dropboxusercontent.com/u/108092026/xbsv/system-130710.img.bz2' -O filesystems/system-130710.img.bz2
+	wget 'https://github.com/cambridgehackers/zynq-boot-filesystems/blob/system-130710/system-130710.img.bz2?raw=true' -O filesystems/system-130710.img.bz2
 
 filesystems/userdata.img.bz2:
 	mkdir -p filesystems
-	wget 'https://dl.dropboxusercontent.com/u/108092026/xbsv/userdata.img.bz2' -O filesystems/userdata.img.bz2
+	wget 'https://github.com/cambridgehackers/zynq-boot-filesystems/blob/userdata/userdata.img.bz2?raw=true' -O filesystems/userdata.img.bz2
 
 sdcard-$(BOARD)/system.img: filesystems/system-130710.img.bz2
 	mkdir -p sdcard-$(BOARD)
