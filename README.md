@@ -3,7 +3,8 @@ zynq-boot
 
 Scripts to create a boot.bin file for linux on Xilinx Zync
 
-The boot.bin file contains:
+The boot.bin file contains 4 components:
+
 1) First Stage Boot Loader (fsbl).
 
 This file does limited initialization of the ARM processor and also
@@ -39,6 +40,9 @@ zedboard and the zc702 board.
 The boot.bin is board-specific, because the first stage boot loader
 (fsbl) and the devicetree are both board-specific.
 
+Building Zynq-Boot
+================
+
 To see all possible make targets, please just type:
 
     make
@@ -61,6 +65,8 @@ To build a everything for a zc706:
 
 Compiling the linux kernel on Linux:
 ====================================
+
+If you would like to use a different kernel, you can make it from source.
 
     # step 1: get the linux kernel source
     git clone git@github.com:cambridgehackers/linux-xlnx.git
