@@ -27,40 +27,51 @@ The boot.bin is board-specific, because the first stage boot loader
 (fsbl) and the devicetree are both board-specific.
 
 To see all possible make targets, please just type:
-   make
+
+    make
 
 To build a everything for a zedboard:
-   make all.zedboard
+
+    make all.zedboard
 
 To build just a boot.bin for a zedboard:
-   make bootbin.zedboard
+
+    make bootbin.zedboard
 
 To build a everything for a zc702:
-   make all.zc702
+
+    make all.zc702
 
 To build a everything for a zc706:
-   make all.zc706
+
+    make all.zc706
 
 Compiling the linux kernel on Linux:
 ====================================
 
-#1)
-   git clone git@github.com:cambridgehackers/linux-xlnx.git
-#2)
-   cd linux-xlnx/
-#3)
-   git checkout remotes/origin/xbsv-2014.04 -b xbsv-2014.04
-#4)
-   make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- xilinx_zynq_portal_defconfig  
-#5)
-   make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi-   
-#6)
-   cp arch/arm/boot/zImage ../zynq-boot/imagefiles/zImage  
+    # step 1: get the linux kernel source
+    git clone git@github.com:cambridgehackers/linux-xlnx.git
+
+    # step 2:
+    cd linux-xlnx/
+
+    # step 3: check out the xbsv-2014.04 branch
+    git checkout remotes/origin/xbsv-2014.04 -b xbsv-2014.04
+
+    # step 4: configure the kernel
+    make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- xilinx_zynq_portal_defconfig  
+
+    # step 5: make the kernel
+    make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi-   
+
+    # step 6: copy the new kernel into zynq-boot
+    cp arch/arm/boot/zImage ../zynq-boot/imagefiles/zImage  
 
 Compiling the xbsv device drivers on linux:
 
 Compiling the linux kernel on Mac:
 ==================================
+
 1) clone linux-xlnx.git
 2) clone cambridgehackers/mac_linux_headers.git
 3) use mac_linux_headers/compile.sh for running 'make' on linux-xlnx
@@ -68,6 +79,7 @@ Compiling the linux kernel on Mac:
 
 Building just the devicetree compiler needed for zynq-boot (when you don't want to build the entire kernel):
 ===================================================
+
     git clone https://github.com/cambridgehackers/linux-xlnx.git
     cd linux-xlnx/
     git checkout origin/xbsv-2014.04 -b xbsv-2014.04
