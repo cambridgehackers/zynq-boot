@@ -99,8 +99,12 @@ Compiling the linux kernel on Mac:
 
 (this will create a usable dts executable for creating boot.bin from this repo)
 
-Building just the devicetree compiler needed for zynq-boot (when you don't want to build the entire kernel):
-===================================================
+Updating the device tree
+========================
+
+The devicetree compiler source code is part of the Linux kernel source
+code. Here is how to build the devicetree compiler without building
+the entire kernel:
 
     git clone https://github.com/cambridgehackers/linux-xlnx.git
     cd linux-xlnx/
