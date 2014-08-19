@@ -118,19 +118,24 @@ it still builds the executable scripts/dtc/dtc correctly.
 Support for Mini-ITX
 ======================
 Support has been added for the Avnet 7Z100 Mini-ITX development kit:
+
     http://www.zedboard.org/product/mini-itx
 
 Changing Ethernet MAC address
 =============================
 The ethernet MAC address is derived from your $(USER) name.  
 To make boot.bin files for multiple devices that are attached to the network at the same time:
+
     make bootbin.zedboard USER=uniquetringforboard
 
 Adding new boards
 =================
 
 To add a new board:
+
     1) Add the boardname to Makefile
+
     2) add zynq-<boardname>-portal.dts zynq_<boardname>_fsbl.elf to imagefiles/
+
     3) make sure that bootargs in the dts file is updated to reflect the boot ramdisk and /dev/fpgaXXX devices
 
