@@ -19,9 +19,9 @@ all:
 	@echo "    make bootbin.zc706"
 	@echo "    make sdcard.zc706"
 	@echo "    make all.zc706"
-	@echo "    make bootbin.miniitx"
-	@echo "    make sdcard.miniitx"
-	@echo "    make all.miniitx"
+	@echo "    make bootbin.miniitx100"
+	@echo "    make sdcard.miniitx100"
+	@echo "    make all.miniitx100"
 
 #################################################################################################
 # zedboard
@@ -42,11 +42,11 @@ zc706targets: $(zc706targets)
 $(zc706targets):
 	make BOARD=zc706 real.$(basename $@)
 #################################################################################################
-# miniitx
-miniitxtargets = $(addsuffix .miniitx, $(targetnames))
-miniitxtargets: $(miniitxtargets)
-$(miniitxtargets):
-	make BOARD=miniitx real.$(basename $@)
+# miniitx100
+miniitx100targets = $(addsuffix .miniitx100, $(targetnames))
+miniitx100targets: $(miniitx100targets)
+$(miniitx100targets):
+	make BOARD=miniitx100 real.$(basename $@)
 #################################################################################################
 
 real.all: real.bootbin real.sdcard
@@ -67,7 +67,7 @@ ifeq ($(DELETE_TEMP_FILES),1)
 endif
 
 dtb.tmp: imagefiles/zynq-$(BOARD)-portal.dts
-	macbyte=`echo $(USER) | md5sum | cut -c 1-2`; sed s/73/$$macbyte/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
+	macbyte=`echo $(USER)$(BOARD) | md5sum | cut -c 1-2`; sed s/73/$$macbyte/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
 	$(DTC) -I dts -O dtb -o dtb.tmp dtswork.tmp
 ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f dtswork.tmp
