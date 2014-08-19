@@ -4,6 +4,7 @@ NDK_OBJDUMP=$(shell $(NDKPATH)ndk-which objdump)
 PREFIX=$(NDK_OBJDUMP:%-objdump=%-)
 DTC=./bin/dtc
 KERNELID=3.9.0-00054-g7b6edac
+DELETE_TEMP_FILES=1
 
 targetnames = bootbin sdcard all
 
@@ -61,12 +62,16 @@ real.bootbin: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf xbootgen reserved
 	if [ -f boot.bin ]; then mv -v boot.bin boot.bin.bak; fi
 	cp -f imagefiles/zynq_$(BOARD)_fsbl.elf zynq_fsbl.elf
 	./xbootgen zynq_fsbl.elf zcomposite.elf
+ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f zynq_fsbl.elf zcomposite.elf reserved_for_interrupts.tmp
+endif
 
 dtb.tmp: imagefiles/zynq-$(BOARD)-portal.dts
 	macbyte=`echo $(USER) | md5sum | cut -c 1-2`; sed s/73/$$macbyte/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
 	$(DTC) -I dts -O dtb -o dtb.tmp dtswork.tmp
+ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f dtswork.tmp
+endif
 
 zcomposite.elf: ramdisk dtb.tmp
 	echo "******** PRINT GCC CONFIGURE OPTIONS *******"
@@ -79,7 +84,9 @@ zcomposite.elf: ramdisk dtb.tmp
 	$(PREFIX)objcopy -I elf32-littlearm -O binary c.tmp c1.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm c1.tmp c.tmp
 	$(PREFIX)ld -e 0x1008000 -z max-page-size=0x8000 -o zcomposite.elf --script zynq_linux_boot.lds r.tmp d.tmp c.tmp z.tmp
+ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f z.tmp r.tmp d.tmp c.tmp c1.tmp clearreg.o ramdisk.image.gz dtb.tmp
+endif
 
 canoncpio: canoncpio.c
 	gcc -o canoncpio canoncpio.c
@@ -89,7 +96,9 @@ ramdisk: canoncpio
 	cd data; (find . -name unused -o -print | sort | cpio -H newc -o >../ramdisk.image.temp1)
 	./canoncpio < ramdisk.image.temp1 | gzip -9 -n >ramdisk.image.temp
 	cat ramdisk.image.temp /dev/zero | dd of=ramdisk.image.gz count=256 ibs=1024
+ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f ramdisk.image.temp ramdisk.image.temp1
+endif
 
 xbootgen: xbootgen.c Makefile
 	gcc -g -o xbootgen xbootgen.c
@@ -101,7 +110,9 @@ reserved_for_interrupts.tmp: reserved_for_interrupts.S
 	$(PREFIX)gcc -c reserved_for_interrupts.S
 	$(PREFIX)ld -Ttext 0 -e 0 -o i.tmp reserved_for_interrupts.o
 	$(PREFIX)objcopy -O binary -I elf32-little i.tmp reserved_for_interrupts.tmp
+ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f i.tmp reserved_for_interrupts.o
+endif
 
 real.sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BOARD)/boot.bin
 	cp -v imagefiles/zynqportal.ko imagefiles/portalmem.ko imagefiles/timelimit sdcard-$(BOARD)/
