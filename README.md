@@ -139,3 +139,29 @@ To add a new board:
 
     3) make sure that bootargs in the dts file is updated to reflect the boot ramdisk and /dev/fpgaXXX devices
 
+Sources of xxxx_fsbl.elf files
+==============================
+
+Currently:
+
+zynq_zedboard_fsbl.elf:
+
+    * http://www.digilentinc.com/Data/Products/ZEDBOARD/ZedBoard_OOB_Design.zip
+
+    * filename: ZedBoard_OOB_Design/boot_image/zynq_fsbl.elf
+
+zynq_miniitx100_fsbl.elf:
+
+    * http://www.zedboard.org/support/design/2056/17
+
+        * Login/Download "Zynq Mini-ITX 7Z100 Out-of-Box Linux v2013.4"
+
+        * filename: ZMITX_7100_OOB_Linux_VIV2013_4/Xil/sdk_workspace/zmitx_fsbl/Debug/zmitx_fsbl.elf
+
+Future sources (update as needed):
+
+    * http://www.wiki.xilinx.com/Zynq+2014.2+Release
+        * zynq_zc706_fsbl.elf: zc70x/zc706/fsbl.elf
+        * zynq_zc702_fsbl.elf: zc70x/zc702/fsbl.elf
+        * zynq_zedboard_fsbl.elf: zed/fsbl.elf
+
