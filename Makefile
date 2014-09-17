@@ -162,4 +162,4 @@ bin/dtc:
 	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) xilinx_zynq_portal_defconfig; \
 	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) -j8 zImage; \
 	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) M=scripts/dtc; \
-	cp -fv scripts/dtc ../bin/dtc)
+	cp -fv scripts/dtc/dtc ../bin/dtc)
