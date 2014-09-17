@@ -1,6 +1,7 @@
 #
 #NDKPATH=/scratch/android-ndk-r9d/
 NDK_OBJDUMP=$(shell $(NDKPATH)ndk-which objdump)
+NDK_GCC=$(shell $(NDKPATH)ndk-which gcc)
 PREFIX=$(NDK_OBJDUMP:%-objdump=%-)
 DTC=./bin/dtc
 KERNELID=3.9.0-00054-g7b6edac
@@ -151,3 +152,14 @@ sdcard-$(BOARD)/userdata.img:
 	dd if=/dev/zero bs=1k count=102400 of=sdcard-$(BOARD)/userdata.img
 	mkfs -F -t ext4 sdcard-$(BOARD)/userdata.img
 endif
+
+.PHONY: bin/dtc
+
+bin/dtc:
+	if [ -d linux-xlnx ]; then true; else git clone git://github.com/cambridgehackers/linux-xlnx.git; fi
+	(cd linux-xlnx; \
+	git checkout remotes/origin/xbsv-2014.04 -b xbsv-2014.04; \
+	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) xilinx_zynq_portal_defconfig; \
+	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) -j8 zImage; \
+	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) M=scripts/dtc; \
+	cp -fv scripts/dtc ../bin/dtc)
