@@ -62,12 +62,15 @@ static uint32_t get_int32(uint8_t *data)
     return strtol(temp, NULL, 16);
 }
 
-int main()
+int main(int argc, const char **argv)
 {
     Cpio_header header;
     uint32_t ino, nlen, newi;
     uint8_t data[MAX_SEGMENT], temp[MAX_FILENAME];
     int fd = 0; //open("xx.old", O_RDONLY);
+    int verbose = 0;
+    if (argc > 1 && strcmp(argv[1], "--verbose") == 0)
+	verbose = 1;
 
     do {
         read(fd, &header, sizeof(header));
@@ -91,7 +94,8 @@ int main()
         }
         int len = ALIGN32(sizeof(header) + nlen)
               + ALIGN32(get_int32(header.c_filesize)) - sizeof(header) - nlen;
-        fprintf(stderr, "name %s\t\t\t %x new %x mtime %x\n", temp, ino, newi+1, get_int32(header.c_mtime));
+	if (verbose)
+	    fprintf(stderr, "name %s\t\t\t %x new %x mtime %x\n", temp, ino, newi+1, get_int32(header.c_mtime));
         sprintf(data, "%08X", newi+1);
         if (ino)
             memcpy(header.c_ino, data, sizeof(header.c_ino));
