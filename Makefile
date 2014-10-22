@@ -188,7 +188,7 @@ sdcard-$(BOARD)/userdata.img:
 	$(Q)mkfs $(MKFS_Q) -F -t ext4 sdcard-$(BOARD)/userdata.img
 endif
 
- $(ZBDIR)/linux-xlnx/arch/arm/boot/zImage:
+$(ZBDIR)/linux-xlnx/arch/arm/boot/zImage:
 	$(Q)if [ -d linux-xlnx ]; then true; else git clone git://github.com/cambridgehackers/linux-xlnx.git; fi
 	@echo building dtc
 	$(Q)(cd linux-xlnx; \
