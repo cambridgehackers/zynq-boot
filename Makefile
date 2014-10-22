@@ -115,6 +115,7 @@ ifeq ($(DELETE_TEMP_FILES),1)
 endif
 
 $(ZBDIR)/bin/canoncpio: $(ZBDIR)/canoncpio.c
+	mkdir -p $(ZBDIR)/bin
 	$(Q)gcc -o $(ZBDIR)/bin/canoncpio $(ZBDIR)/canoncpio.c
 
 ramdisk: $(ZBDIR)/bin/canoncpio
@@ -129,6 +130,7 @@ ifeq ($(DELETE_TEMP_FILES),1)
 endif
 
 $(ZBDIR)/bin/xbootgen: $(ZBDIR)/xbootgen.c $(ZBDIR)/Makefile
+	mkdir -p $(ZBDIR)/bin
 	$(Q)gcc -g -o $(ZBDIR)/bin/xbootgen $(ZBDIR)/xbootgen.c
 
 dumpbootbin: dumpbootbin.c Makefile
@@ -210,4 +212,5 @@ $(ZBDIR)/imagefiles/zImage: $(ZBDIR)/linux-xlnx/arch/arm/boot/zImage
 	cp -fv linux-xlnx/arch/arm/boot/zImage $(ZBDIR)/imagefiles/zImage
 
 $(ZBDIR)/bin/dtc: $(ZBDIR)/linux-xlnx/arch/arm/boot/zImage
+	mkdir -p $(ZBDIR)/bin
 	$(Q)cp -fv linux-xlnx/scripts/dtc/dtc $(ZBDIR)/bin/dtc
