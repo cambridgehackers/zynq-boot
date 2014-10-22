@@ -71,7 +71,7 @@ real.all: real.bootbin real.sdcard
 clean:
 	@echo "make realclean" to remove downloaded files
 	@echo cleaning
-	$(Q)rm -fr sdcard-* boot.bin *.tmp *.elf *.gz *.hex *.o foo.map $(ZBDIR)/bin/* $(ZBDIR)/imagefiles/zImage
+	$(Q)rm -fr sdcard-* boot.bin *.tmp *.elf *.gz *.hex *.o foo.map $(ZBDIR)/bin/* $(ZBDIR)/imagefiles/zImage $(ZBDIR)/imagefiles/*.ko
 
 realclean: clean
 	@echo cleaning filesystems
@@ -86,13 +86,10 @@ ifeq ($(DELETE_TEMP_FILES),1)
 	$(Q)rm -f zynq_fsbl.elf zcomposite.elf reserved_for_interrupts.tmp
 endif
 
-dtb.tmp: $(ZBDIR)/imagefiles/zynq-$(BOARD)-portal.dts
+dtb.tmp: $(ZBDIR)/imagefiles/zynq-$(BOARD)-portal.dts $(ZBDIR)/bin/dtc
 	@echo making dtb.tmp
 	$(Q)macbyte=`echo $(USER)$(BOARD) | md5sum | cut -c 1-2`; sed s/73/$$macbyte/ <$(ZBDIR)/imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
 	@grep local-mac-address dtswork.tmp
-	$(Q)## first time, just to see if $(DTC) executes
-	#$(Q)$(DTC) -I dts -O dtb -o dtb.tmp dtswork.tmp || make $(ZBDIR)/bin/dtc
-	$(Q)## second time, to make dtb.tmp
 	@echo compiling device tree
 	$(Q)$(DTC) -I dts -O dtb -o dtb.tmp dtswork.tmp
 ifeq ($(DELETE_TEMP_FILES),1)
@@ -145,7 +142,7 @@ ifeq ($(DELETE_TEMP_FILES),1)
 	$(Q)rm -f i.tmp reserved_for_interrupts.o
 endif
 
-real.sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BOARD)/boot.bin
+real.sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BOARD)/boot.bin $(ZBDIR)/imagefiles/portalmem.ko $(ZBDIR)/imagefiles/zynqportal.ko
 	$(Q)cp -v $(ZBDIR)/imagefiles/zynqportal.ko $(ZBDIR)/imagefiles/portalmem.ko $(ZBDIR)/imagefiles/timelimit sdcard-$(BOARD)/
 	$(Q)[ -e sdcard-$(BOARD)/$(KERNELID) ] || mkdir sdcard-$(BOARD)/$(KERNELID)
 	@echo "Files for $(BOARD) SD Card are in $(PWD)/sdcard-$(BOARD)"
@@ -189,6 +186,7 @@ sdcard-$(BOARD)/userdata.img:
 endif
 
 $(ZBDIR)/linux-xlnx/arch/arm/boot/zImage:
+	@echo checking out xilinx linux kernel
 	$(Q)if [ -d linux-xlnx ]; then true; else git clone git://github.com/cambridgehackers/linux-xlnx.git; fi
 	@echo building dtc
 	$(Q)(cd linux-xlnx; \
@@ -196,6 +194,17 @@ $(ZBDIR)/linux-xlnx/arch/arm/boot/zImage:
 	make ARCH=arm CROSS_COMPILE=$(PREFIX) xilinx_zynq_portal_defconfig; \
 	make ARCH=arm CROSS_COMPILE=$(PREFIX) -j8 zImage modules; \
 	make ARCH=arm CROSS_COMPILE=$(PREFIX) M=scripts/dtc )
+
+$(ZBDIR)/imagefiles/portalmem.ko: $(ZBDIR)/linux-xlnx/arch/arm/boot/zImage
+	@echo checking out connectal
+	$(Q)if [ -d connectal ]; then true; else git clone git://github.com/cambridgehackers/connectal.git; fi
+	@echo building zynqdrivers $(PREFIX)
+	$(Q)(cd connectal/; \
+	make DEVICE_XILINX_KERNEL=$(ZBDIR)/linux-xlnx CROSS_COMPILE=$(PREFIX) zynqdrivers )
+	cp -fv connectal/drivers/portalmem/portalmem.ko $(ZBDIR)/imagefiles/
+	cp -fv connectal/drivers/zynqportal/zynqportal.ko $(ZBDIR)/imagefiles/
+
+$(ZBDIR)/imagefiles/zynqportal.ko: $(ZBDIR)/imagefiles/portalmem.ko
 
 $(ZBDIR)/imagefiles/zImage: $(ZBDIR)/linux-xlnx/arch/arm/boot/zImage
 	cp -fv linux-xlnx/arch/arm/boot/zImage $(ZBDIR)/imagefiles/zImage
