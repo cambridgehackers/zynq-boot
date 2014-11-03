@@ -84,15 +84,14 @@ ifeq ($(DELETE_TEMP_FILES),1)
 endif
 
 # daffodil's zedboard uses this macaddress: 00:e0:0c:00:98:03 
+dtswork.tmp:
 ifdef DAFFODIL
-macbyte:
 	sed s/73/98/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
 else
-macbyte:
 	macbyte=`echo $(USER)$(BOARD) | md5sum | cut -c 1-2`; sed s/73/$$macbyte/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
 endif
 
-dtb.tmp: imagefiles/zynq-$(BOARD)-portal.dts macbyte
+dtb.tmp: imagefiles/zynq-$(BOARD)-portal.dts dtswork.tmp
 	$(DTC) -help >& /dev/null || make bin/dtc
 	$(DTC) -I dts -O dtb -o dtb.tmp dtswork.tmp
 ifeq ($(DELETE_TEMP_FILES),1)
