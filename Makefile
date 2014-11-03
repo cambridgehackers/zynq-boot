@@ -30,6 +30,22 @@ zedboardtargets = $(addsuffix .zedboard, $(targetnames))
 zedboardtargets: $(zedboardtargets)
 $(zedboardtargets):
 	make BOARD=zedboard real.$(basename $@)
+
+zedboard-adb:
+	adb connect $(RUNPARAM)
+	adb -s $(RUNPARAM):5555 shell pwd || true
+	adb connect $(RUNPARAM)
+	adb -s $(RUNPARAM):5555 root || true
+	sleep 1
+	adb connect $(RUNPARAM)
+	adb -s $(RUNPARAM):5555 push sdcard-zedboard/3.9.0-00054-g7b6edac  /mnt/sdcard
+	adb -s $(RUNPARAM):5555 push sdcard-zedboard/boot.bin   /mnt/sdcard
+	adb -s $(RUNPARAM):5555 push sdcard-zedboard/portalmem.ko    /mnt/sdcard
+	adb -s $(RUNPARAM):5555 push sdcard-zedboard/system.img    /mnt/sdcard
+	adb -s $(RUNPARAM):5555 push sdcard-zedboard/timelimit    /mnt/sdcard
+	adb -s $(RUNPARAM):5555 push sdcard-zedboard/userdata.img    /mnt/sdcard
+	adb -s $(RUNPARAM):5555 push sdcard-zedboard/zynqportal.ko  /mnt/sdcard
+
 #################################################################################################
 # zc702
 zc702targets = $(addsuffix .zc702, $(targetnames))
@@ -67,8 +83,16 @@ ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f zynq_fsbl.elf zcomposite.elf reserved_for_interrupts.tmp
 endif
 
-dtb.tmp: imagefiles/zynq-$(BOARD)-portal.dts
+# daffodil's zedboard uses this macaddress: 00:e0:0c:00:98:03 
+ifdef DAFFODIL
+macbyte:
+	sed s/73/98/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
+else
+macbyte:
 	macbyte=`echo $(USER)$(BOARD) | md5sum | cut -c 1-2`; sed s/73/$$macbyte/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
+endif
+
+dtb.tmp: imagefiles/zynq-$(BOARD)-portal.dts macbyte
 	$(DTC) -help >& /dev/null || make bin/dtc
 	$(DTC) -I dts -O dtb -o dtb.tmp dtswork.tmp
 ifeq ($(DELETE_TEMP_FILES),1)
