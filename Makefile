@@ -1,27 +1,36 @@
 #
 #NDKPATH=/scratch/android-ndk-r9d/
-NDK_OBJDUMP=$(shell $(NDKPATH)ndk-which objdump)
-NDK_GCC=$(shell $(NDKPATH)ndk-which gcc)
+
+# NDK_OBJDUMP=$(shell $(NDKPATH)ndk-which objdump)
+# NDK_GCC=$(shell $(NDKPATH)ndk-which gcc)
+
+NDK_OBJDUMP=arm-none-linux-gnueabi-objdump
+NDK_GCC=arm-none-linux-gnueabi-gcc
+
 PREFIX=$(NDK_OBJDUMP:%-objdump=%-)
 DTC=./bin/dtc
 KERNELID=3.9.0-00054-g7b6edac
 DELETE_TEMP_FILES=1
 
-targetnames = bootbin sdcard all
+targetnames = bootbin sdcard all zImage
 
 all:
 	@echo "Please type one of the following:"
 	@echo "    make bootbin.zedboard"
 	@echo "    make sdcard.zedboard"
+	@echo "    make zImage.zedboard"
 	@echo "    make all.zedboard"
 	@echo "    make bootbin.zc702"
 	@echo "    make sdcard.zc702"
+	@echo "    make zImage.zc702"
 	@echo "    make all.zc702"
 	@echo "    make bootbin.zc706"
 	@echo "    make sdcard.zc706"
+	@echo "    make zImage.zc706"
 	@echo "    make all.zc706"
 	@echo "    make bootbin.miniitx100"
 	@echo "    make sdcard.miniitx100"
+	@echo "    make zImage.miniitx100"
 	@echo "    make all.miniitx100"
 
 #################################################################################################
@@ -38,13 +47,18 @@ zedboard-adb:
 	adb -s $(RUNPARAM):5555 root || true
 	sleep 1
 	adb connect $(RUNPARAM)
-	adb -s $(RUNPARAM):5555 push sdcard-zedboard/3.9.0-00054-g7b6edac  /mnt/sdcard
+	adb -s $(RUNPARAM):5555 shell rm -rf /mnt/sdcard/3.9.0-00054-g7b6edac
+	adb -s $(RUNPARAM):5555 shell mkdir /mnt/sdcard/3.9.0-00054-g7b6edac
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/boot.bin   /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/portalmem.ko    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/system.img    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/timelimit    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/userdata.img    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/zynqportal.ko  /mnt/sdcard
+	adb -s $(RUNPARAM):5555 shell sync
+	adb -s $(RUNPARAM):5555 shell sync
+	adb -s $(RUNPARAM):5555 reboot
+
 
 #################################################################################################
 # zc702
@@ -140,12 +154,15 @@ ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f i.tmp reserved_for_interrupts.o
 endif
 
+real.zImage: bin/dtc
+	cp linux-xlnx/arch/arm/boot/zImage imagefiles/zImage
+
 real.sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BOARD)/boot.bin
 	cp -v imagefiles/zynqportal.ko imagefiles/portalmem.ko imagefiles/timelimit sdcard-$(BOARD)/
 	[ -e sdcard-$(BOARD)/$(KERNELID) ] || mkdir sdcard-$(BOARD)/$(KERNELID)
 	echo "Files for $(BOARD) SD Card are in $(PWD)/sdcard-$(BOARD)"
 
-.PHONY: real.sdcard real.bootbin real.all
+.PHONY: real.sdcard real.bootbin real.all real.zImage
 
 sdcard-$(BOARD)/boot.bin:
 	mkdir -p sdcard-$(BOARD)
@@ -179,6 +196,8 @@ sdcard-$(BOARD)/userdata.img:
 endif
 
 .PHONY: bin/dtc
+
+
 
 bin/dtc:
 	if [ -d linux-xlnx ]; then true; else git clone git://github.com/cambridgehackers/linux-xlnx.git; fi
