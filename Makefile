@@ -1,14 +1,22 @@
 #
-#NDKPATH=/scratch/android-ndk-r9d/
+OS := $(shell uname)
 
+#NDKPATH=/scratch/android-ndk-r9d/
 # NDK_OBJDUMP=$(shell $(NDKPATH)ndk-which objdump)
 # NDK_GCC=$(shell $(NDKPATH)ndk-which gcc)
+
+ifeq ($(OS), Darwin)
+MD5PROG = md5
+DTC=./bin/dtc
+else
+MD5PROG = md5sum
+DTC=./bin/dtc
+endif
 
 NDK_OBJDUMP=arm-none-linux-gnueabi-objdump
 NDK_GCC=arm-none-linux-gnueabi-gcc
 
 PREFIX=$(NDK_OBJDUMP:%-objdump=%-)
-DTC=./bin/dtc
 KERNELID=3.9.0-00054-g7b6edac
 DELETE_TEMP_FILES=1
 
@@ -32,6 +40,10 @@ all:
 	@echo "    make sdcard.miniitx100"
 	@echo "    make zImage.miniitx100"
 	@echo "    make all.miniitx100"
+	@echo "    make bootbin.zybo"
+	@echo "    make sdcard.zybo"
+	@echo "    make zImage.zybo"
+	@echo "    make all.zybo"
 
 #################################################################################################
 # zedboard
@@ -79,6 +91,12 @@ miniitx100targets: $(miniitx100targets)
 $(miniitx100targets):
 	make BOARD=miniitx100 real.$(basename $@)
 #################################################################################################
+# zybo
+zybotargets = $(addsuffix .zybo, $(targetnames))
+zybotargets: $(zybotargets)
+$(zybotargets):
+	make BOARD=zybo real.$(basename $@)
+#################################################################################################
 
 real.all: real.bootbin real.sdcard
 
@@ -102,7 +120,7 @@ dtswork.tmp:
 ifdef DAFFODIL
 	sed s/73/98/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
 else
-	macbyte=`echo $(USER)$(BOARD) | md5sum | cut -c 1-2`; sed s/73/$$macbyte/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
+	macbyte=`echo $(USER)$(BOARD) | $(MD5PROG) | cut -c 1-2`; sed s/73/$$macbyte/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
 endif
 
 # if [ -f $(DTC) ]; then echo $(DTC); else make $(DTC); fi
@@ -181,7 +199,7 @@ filesystems/userdata.img.bz2:
 sdcard-$(BOARD)/system.img: filesystems/system-130710.img.bz2
 	mkdir -p sdcard-$(BOARD)
 	bzcat filesystems/system-130710.img.bz2 > sdcard-$(BOARD)/system.img
-	(cd sdcard-$(BOARD); md5sum -c ../imagefiles/filesystems.md5sum)
+	(cd sdcard-$(BOARD); $(MD5PROG) -c ../imagefiles/filesystems.md5sum)
 
 ifeq ($(shell uname), Darwin)
 sdcard-$(BOARD)/userdata.img: filesystems/userdata.img.bz2
