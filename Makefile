@@ -8,6 +8,7 @@ OS := $(shell uname)
 ifeq ($(OS), Darwin)
 MD5PROG = md5
 DTC=./bin/dtc
+MACHEADERS = HOSTCFLAGS="-I../mac_linux_headers"
 else
 MD5PROG = md5sum
 DTC=./bin/dtc
@@ -221,7 +222,7 @@ bin/dtc:
 	if [ -d linux-xlnx ]; then true; else git clone git://github.com/cambridgehackers/linux-xlnx.git; fi
 	(cd linux-xlnx; \
 	git checkout remotes/origin/xbsv-2014.04 -b xbsv-2014.04; \
-	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) xilinx_zynq_portal_defconfig; \
-	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) -j8 zImage; \
-	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) M=scripts/dtc; \
+	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) $(MACHEADERS) xilinx_zynq_portal_defconfig; \
+	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) $(MACHEADERS) -j8 zImage; \
+	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) $(MACHEADERS) M=scripts/dtc; \
 	cp -fv scripts/dtc/dtc ../bin/dtc)
