@@ -1,6 +1,17 @@
 zynq-boot
 =========
 
+The boot.bin file is board specific and contains the MAC address for
+the ethernet, so you need a unique one for each type of board you use
+on a network. If you only have one board, you can use prebuilt images
+from the versioned branch of zynq-boot-filesystems:
+
+   https://github.com/cambridgehackers/zynq-boot-filesystems/tree/v15.02.1
+
+
+Creating boot.bin
+=================
+
 Scripts to create a boot.bin file for linux on Xilinx Zync
 
 The boot.bin file contains 4 components:
