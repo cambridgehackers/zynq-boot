@@ -118,13 +118,16 @@ ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f zynq_fsbl.elf zcomposite.elf reserved_for_interrupts.tmp
 endif
 
+ifdef DAFFODIL
+MACBYTE=98
+else
+MACBYTE?=$(shell echo $(USER)$(BOARD) | $(MD5PROG) | cut -c 1-2)
+endif
+
 # daffodil's zedboard uses this macaddress: 00:e0:0c:00:98:03 
 dtswork.tmp:
-ifdef DAFFODIL
-	sed s/73/98/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
-else
-	macbyte=`echo $(USER)$(BOARD) | $(MD5PROG) | cut -c 1-2`; sed s/73/$$macbyte/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
-endif
+	echo MACBYTE=$(MACBYTE)
+	sed s/73/$(MACBYTE)/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
 
 # if [ -f $(DTC) ]; then echo $(DTC); else make $(DTC); fi
 INVOKE_DTC = $(DTC) -I dts -O dtb -o dtb.tmp dtswork.tmp
@@ -221,6 +224,17 @@ sdcard-zynq.zip:
 	mv sdcard-zedboard sdcard-zynq
 	zip sdcard-zynq.zip sdcard-zynq/*.ko sdcard-zynq/*.img sdcard-zynq/3.* sdcard-zynq/timelimit sdcard-zynq/webserver
 	mv sdcard-zynq sdcard-zedboard
+
+bootbin.zip:
+	echo MACBYTE=$(MACBYTE)
+	make all.zedboard
+	rm -f boot.bin
+	make MACBYTE=$(MACBYTE) bootbin.$(BOARD)
+	mkdir bootbin-$(BOARD)
+	mv -v boot.bin bootbin-$(BOARD)
+	cp -v sdcard-zedboard/*.ko bootbin-$(BOARD)
+	zip bootbin-$(BOARD)-00e00c00$(MACBYTE)03.zip bootbin-$(BOARD)/*
+	rm -fr bootbin-$(BOARD)
 
 .PHONY: bin/dtc
 
