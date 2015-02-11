@@ -25,6 +25,7 @@ targetnames = bootbin sdcard all zImage
 
 all:
 	@echo "Please type one of the following:"
+	@echo "    make sdcard-zynq.zip"
 	@echo "    make bootbin.zedboard"
 	@echo "    make sdcard.zedboard"
 	@echo "    make zImage.zedboard"
@@ -214,6 +215,12 @@ sdcard-$(BOARD)/userdata.img:
 	dd if=/dev/zero bs=1k count=102400 of=sdcard-$(BOARD)/userdata.img
 	mkfs -F -t ext4 sdcard-$(BOARD)/userdata.img
 endif
+
+sdcard-zynq.zip:
+	make all.zedboard
+	mv sdcard-zedboard sdcard-zynq
+	zip sdcard-zynq.zip sdcard-zynq/*.ko sdcard-zynq/*.img sdcard-zynq/3.* sdcard-zynq/timelimit sdcard-zynq/webserver
+	mv sdcard-zynq sdcard-zedboard
 
 .PHONY: bin/dtc
 
