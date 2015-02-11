@@ -88,7 +88,7 @@ If you would like to use a different kernel, you can make it from source.
     # step 3: check out the xbsv-2014.04 branch
     git checkout remotes/origin/xbsv-2014.04 -b xbsv-2014.04
 
-    # step 4: configure the kernel
+    # step 4: configure the kernel. We use CodeSourcery 2009q1. The NDK toolchain does not work for this.
     make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- xilinx_zynq_portal_defconfig  
 
     # step 5: make the kernel
