@@ -236,6 +236,14 @@ bootbin.zip:
 	zip bootbin-$(BOARD)-00e00c00$(MACBYTE)03.zip bootbin-$(BOARD)/*
 	rm -fr bootbin-$(BOARD)
 
+update-zynq-boot-filesystems:
+	make sdcard-zynq.zip
+	rm -f bootbin-*.zip
+	for b in zedboard zc702 zc706; do make BOARD=$$b bootbin.zip; done
+	(cd ../zynq-boot-filesystems; git checkout --orphan v$(VERSION))
+	cp *.zip ../zynq-boot-filesystems
+	(cd ../zynq-boot-filesystems; git add *.zip; git commit -m "version $(VERSION)")
+
 .PHONY: bin/dtc
 
 
