@@ -66,6 +66,7 @@ zedboard-adb:
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/portalmem.ko    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/system.img    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/timelimit    /mnt/sdcard
+	adb -s $(RUNPARAM):5555 push sdcard-zedboard/webserver    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/userdata.img    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/zynqportal.ko  /mnt/sdcard
 	adb -s $(RUNPARAM):5555 shell sync
@@ -177,7 +178,7 @@ real.zImage: bin/dtc
 	cp linux-xlnx/arch/arm/boot/zImage imagefiles/zImage
 
 real.sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BOARD)/boot.bin
-	cp -v imagefiles/zynqportal.ko imagefiles/portalmem.ko imagefiles/timelimit sdcard-$(BOARD)/
+	cp -v imagefiles/zynqportal.ko imagefiles/portalmem.ko imagefiles/timelimit imagefiles/webserver sdcard-$(BOARD)/
 	[ -e sdcard-$(BOARD)/$(KERNELID) ] || mkdir sdcard-$(BOARD)/$(KERNELID)
 	echo "Files for $(BOARD) SD Card are in $(PWD)/sdcard-$(BOARD)"
 
