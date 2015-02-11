@@ -6,17 +6,17 @@ the ethernet, so you need a unique one for each type of board you use
 on a network. If you only have one board, you can use prebuilt images
 from the versioned branch of zynq-boot-filesystems:
 
-* https://github.com/cambridgehackers/zynq-boot-filesystems/tree/v15.02.2
+* https://github.com/cambridgehackers/zynq-boot-filesystems/tree/v15.02.3
 
 From that link, download:
 
-* https://github.com/cambridgehackers/zynq-boot-filesystems/blob/v15.02.2/sdcard-zynq.zip
+* https://github.com/cambridgehackers/zynq-boot-filesystems/blob/v15.02.3/sdcard-zynq.zip
 
 also download a bootbin*.zip for your board:
 
-* zedboard: https://github.com/cambridgehackers/zynq-boot-filesystems/blob/v15.02.2/bootbin-zedboard-00e00c009603.zip
-* zc702: https://github.com/cambridgehackers/zynq-boot-filesystems/blob/v15.02.2/bootbin-zc702-00e00c005603.zip
-* zc706: https://github.com/cambridgehackers/zynq-boot-filesystems/blob/v15.02.2/bootbin-zc706-00e00c004f03.zip
+* zedboard: https://github.com/cambridgehackers/zynq-boot-filesystems/blob/v15.02.3/bootbin-zedboard-00e00c009603.zip
+* zc702: https://github.com/cambridgehackers/zynq-boot-filesystems/blob/v15.02.3/bootbin-zc702-00e00c005603.zip
+* zc706: https://github.com/cambridgehackers/zynq-boot-filesystems/blob/v15.02.3/bootbin-zc706-00e00c004f03.zip
 
 My SD card is labeled "ZYNQ" and under Ubuntu mounts as
 /media/jamey/ZYNQ. On OS X it mounts as /Volumes/ZYNQ. Update the
