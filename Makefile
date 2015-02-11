@@ -18,7 +18,7 @@ NDK_OBJDUMP=arm-none-linux-gnueabi-objdump
 NDK_GCC=arm-none-linux-gnueabi-gcc
 
 PREFIX=$(NDK_OBJDUMP:%-objdump=%-)
-KERNELID=3.9.0-00054-g7b6edac
+KERNELID=3.9.0-00054-g7b6edac-dirty
 DELETE_TEMP_FILES=1
 
 targetnames = bootbin sdcard all zImage
@@ -61,8 +61,8 @@ zedboard-adb:
 	adb -s $(RUNPARAM):5555 root || true
 	sleep 1
 	adb connect $(RUNPARAM)
-	adb -s $(RUNPARAM):5555 shell rm -rf /mnt/sdcard/3.9.0-00054-g7b6edac
-	adb -s $(RUNPARAM):5555 shell mkdir /mnt/sdcard/3.9.0-00054-g7b6edac
+	adb -s $(RUNPARAM):5555 shell rm -rf /mnt/sdcard/$(KERNELID)
+	adb -s $(RUNPARAM):5555 shell mkdir /mnt/sdcard/$(KERNELID)
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/boot.bin   /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/portalmem.ko    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/system.img    /mnt/sdcard
@@ -222,7 +222,7 @@ endif
 sdcard-zynq.zip:
 	make all.zedboard
 	mv sdcard-zedboard sdcard-zynq
-	zip sdcard-zynq.zip sdcard-zynq/*.ko sdcard-zynq/*.img sdcard-zynq/3.* sdcard-zynq/timelimit sdcard-zynq/webserver
+	zip sdcard-zynq.zip sdcard-zynq/*.img sdcard-zynq/timelimit sdcard-zynq/webserver
 	mv sdcard-zynq sdcard-zedboard
 
 bootbin.zip:
@@ -233,12 +233,13 @@ bootbin.zip:
 	mkdir bootbin-$(BOARD)
 	mv -v boot.bin bootbin-$(BOARD)
 	cp -v sdcard-zedboard/*.ko bootbin-$(BOARD)
+	mkdir bootbin-$(BOARD)/$(KERNELID)
 	zip bootbin-$(BOARD)-00e00c00$(MACBYTE)03.zip bootbin-$(BOARD)/*
 	rm -fr bootbin-$(BOARD)
 
 update-zynq-boot-filesystems:
+	rm -f *.zip
 	make sdcard-zynq.zip
-	rm -f bootbin-*.zip
 	for b in zedboard zc702 zc706; do make BOARD=$$b bootbin.zip; done
 	(cd ../zynq-boot-filesystems; git checkout --orphan v$(VERSION))
 	cp *.zip ../zynq-boot-filesystems
