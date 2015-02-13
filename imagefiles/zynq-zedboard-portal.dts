@@ -161,7 +161,8 @@
 			xlnx,slcr-div1-100Mbps = <5>;
 			xlnx,slcr-div1-10Mbps = <50>;
 			#address-cells = <0x1>;
-			#size-cells = <0x0>;
+			ksize-cells = <0x0>;
+			local-mac-address-marker-string = "THE NEXT FIELD IS THE LOCAL MAC ADDRESS FOR UPDATE";
 			local-mac-address = [ 00 E0 0C 00 73 03 ];
 			mdio {
 				#address-cells = <1>;

@@ -101,6 +101,12 @@ $(zybotargets):
 	make BOARD=zybo real.$(basename $@)
 #################################################################################################
 
+ifdef DAFFODIL
+MACBYTE=98
+else
+MACBYTE?=0x$(shell echo $(USER)$(BOARD) | $(MD5PROG) | cut -c 1-2)
+endif
+
 real.all: real.bootbin real.sdcard
 
 clean:
@@ -114,20 +120,16 @@ real.bootbin: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf xbootgen reserved
 	if [ -f boot.bin ]; then mv -v boot.bin boot.bin.bak; fi
 	cp -f imagefiles/zynq_$(BOARD)_fsbl.elf zynq_fsbl.elf
 	./xbootgen zynq_fsbl.elf zcomposite.elf
+	./update_bootbin_mac.py boot.bin $(MACBYTE)
 ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f zynq_fsbl.elf zcomposite.elf reserved_for_interrupts.tmp
-endif
-
-ifdef DAFFODIL
-MACBYTE=98
-else
-MACBYTE?=$(shell echo $(USER)$(BOARD) | $(MD5PROG) | cut -c 1-2)
 endif
 
 # daffodil's zedboard uses this macaddress: 00:e0:0c:00:98:03 
 dtswork.tmp:
 	echo MACBYTE=$(MACBYTE)
-	sed s/73/$(MACBYTE)/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
+	#sed s/73/$(MACBYTE)/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
+	cat <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
 
 # if [ -f $(DTC) ]; then echo $(DTC); else make $(DTC); fi
 INVOKE_DTC = $(DTC) -I dts -O dtb -o dtb.tmp dtswork.tmp
