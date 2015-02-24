@@ -157,7 +157,7 @@
 			interrupt-parent = <&ps7_scugic_0>;
 			interrupts = < 0 22 1 >;
                         local-mac-address-marker-string = "THE NEXT FIELD IS THE LOCAL MAC ADDRESS FOR UPDATE";
-			local-mac-address = [ 00 0a 35 00 00 00 ];
+			local-mac-address = [ 00 E0 0C 00 73 03 ];
 			phy-handle = <&phy0>;
 			phy-mode = "rgmii-id";
 			reg = < 0xe000b000 0x1000 >;
