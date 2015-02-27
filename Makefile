@@ -19,7 +19,7 @@ NDK_GCC=arm-none-linux-gnueabi-gcc
 
 PREFIX=$(NDK_OBJDUMP:%-objdump=%-)
 KERNELID=3.9.0-00054-g7b6edac
-DELETE_TEMP_FILES=1
+DELETE_TEMP_FILES=0
 
 targetnames = bootbin sdcard all zImage
 
@@ -226,3 +226,16 @@ bin/dtc:
 	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) $(MACHEADERS) -j8 zImage; \
 	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) $(MACHEADERS) M=scripts/dtc; \
 	cp -fv scripts/dtc/dtc ../bin/dtc)
+
+parallella-boot:  ramdisk dtb.tmp
+	# create ouput area
+	mkdir -p parallella-images
+	# device tree
+	cp dtp.tmp parallella-images/dtb
+	# kernel
+	#assemble clearreg.S
+	$(PREFIX)gcc -c clearreg.S
+	$(PREFIX)ld -z noexecstack -Ttext 0 -e 0 -o c.tmp clearreg.o
+	$(PREFIX)ld -e 0x1008000 -O binary -z max-page-size=0x8000 -o zcomposite.elf --script zynq_linux_boot.lds c.tmp z.tmp
+	$(PREFIX)objcopy -O binary -B arm -o pImage c.tmp zImage
+
