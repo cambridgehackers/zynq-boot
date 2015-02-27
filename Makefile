@@ -18,13 +18,14 @@ NDK_OBJDUMP=arm-none-linux-gnueabi-objdump
 NDK_GCC=arm-none-linux-gnueabi-gcc
 
 PREFIX=$(NDK_OBJDUMP:%-objdump=%-)
-KERNELID=3.9.0-00054-g7b6edac
-DELETE_TEMP_FILES=0
+KERNELID=3.9.0-00054-g7b6edac-dirty
+DELETE_TEMP_FILES=1
 
 targetnames = bootbin sdcard all zImage
 
 all:
 	@echo "Please type one of the following:"
+	@echo "    make sdcard-zynq.zip"
 	@echo "    make bootbin.zedboard"
 	@echo "    make sdcard.zedboard"
 	@echo "    make zImage.zedboard"
@@ -60,12 +61,13 @@ zedboard-adb:
 	adb -s $(RUNPARAM):5555 root || true
 	sleep 1
 	adb connect $(RUNPARAM)
-	adb -s $(RUNPARAM):5555 shell rm -rf /mnt/sdcard/3.9.0-00054-g7b6edac
-	adb -s $(RUNPARAM):5555 shell mkdir /mnt/sdcard/3.9.0-00054-g7b6edac
+	adb -s $(RUNPARAM):5555 shell rm -rf /mnt/sdcard/$(KERNELID)
+	adb -s $(RUNPARAM):5555 shell mkdir /mnt/sdcard/$(KERNELID)
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/boot.bin   /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/portalmem.ko    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/system.img    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/timelimit    /mnt/sdcard
+	adb -s $(RUNPARAM):5555 push sdcard-zedboard/webserver    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/userdata.img    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/zynqportal.ko  /mnt/sdcard
 	adb -s $(RUNPARAM):5555 shell sync
@@ -99,6 +101,12 @@ $(zybotargets):
 	make BOARD=zybo real.$(basename $@)
 #################################################################################################
 
+ifdef DAFFODIL
+MACBYTE=98
+else
+MACBYTE?=0x$(shell echo $(USER)$(BOARD) | $(MD5PROG) | cut -c 1-2)
+endif
+
 real.all: real.bootbin real.sdcard
 
 clean:
@@ -112,17 +120,16 @@ real.bootbin: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf xbootgen reserved
 	if [ -f boot.bin ]; then mv -v boot.bin boot.bin.bak; fi
 	cp -f imagefiles/zynq_$(BOARD)_fsbl.elf zynq_fsbl.elf
 	./xbootgen zynq_fsbl.elf zcomposite.elf
+	./update_bootbin_mac.py boot.bin $(MACBYTE)
 ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f zynq_fsbl.elf zcomposite.elf reserved_for_interrupts.tmp
 endif
 
 # daffodil's zedboard uses this macaddress: 00:e0:0c:00:98:03 
 dtswork.tmp:
-ifdef DAFFODIL
-	sed s/73/98/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
-else
-	macbyte=`echo $(USER)$(BOARD) | $(MD5PROG) | cut -c 1-2`; sed s/73/$$macbyte/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
-endif
+	echo MACBYTE=$(MACBYTE)
+	#sed s/73/$(MACBYTE)/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
+	cat <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
 
 # if [ -f $(DTC) ]; then echo $(DTC); else make $(DTC); fi
 INVOKE_DTC = $(DTC) -I dts -O dtb -o dtb.tmp dtswork.tmp
@@ -177,7 +184,7 @@ real.zImage: bin/dtc
 	cp linux-xlnx/arch/arm/boot/zImage imagefiles/zImage
 
 real.sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BOARD)/boot.bin
-	cp -v imagefiles/zynqportal.ko imagefiles/portalmem.ko imagefiles/timelimit sdcard-$(BOARD)/
+	cp -v imagefiles/zynqportal.ko imagefiles/portalmem.ko imagefiles/timelimit imagefiles/webserver sdcard-$(BOARD)/
 	[ -e sdcard-$(BOARD)/$(KERNELID) ] || mkdir sdcard-$(BOARD)/$(KERNELID)
 	echo "Files for $(BOARD) SD Card are in $(PWD)/sdcard-$(BOARD)"
 
@@ -213,6 +220,32 @@ sdcard-$(BOARD)/userdata.img:
 	dd if=/dev/zero bs=1k count=102400 of=sdcard-$(BOARD)/userdata.img
 	mkfs -F -t ext4 sdcard-$(BOARD)/userdata.img
 endif
+
+sdcard-zynq.zip:
+	make all.zedboard
+	mv sdcard-zedboard sdcard-zynq
+	zip sdcard-zynq.zip sdcard-zynq/*.img sdcard-zynq/timelimit sdcard-zynq/webserver
+	mv sdcard-zynq sdcard-zedboard
+
+bootbin.zip:
+	echo MACBYTE=$(MACBYTE)
+	make all.zedboard
+	rm -f boot.bin
+	make MACBYTE=$(MACBYTE) bootbin.$(BOARD)
+	mkdir bootbin-$(BOARD)
+	mv -v boot.bin bootbin-$(BOARD)
+	cp -v sdcard-zedboard/*.ko bootbin-$(BOARD)
+	mkdir bootbin-$(BOARD)/$(KERNELID)
+	zip bootbin-$(BOARD)-00e00c00$(MACBYTE)03.zip bootbin-$(BOARD)/*
+	rm -fr bootbin-$(BOARD)
+
+update-zynq-boot-filesystems:
+	rm -f *.zip
+	make sdcard-zynq.zip
+	for b in zedboard zc702 zc706; do make BOARD=$$b bootbin.zip; done
+	(cd ../zynq-boot-filesystems; git checkout --orphan v$(VERSION))
+	cp *.zip ../zynq-boot-filesystems
+	(cd ../zynq-boot-filesystems; git add *.zip; git commit -m "version $(VERSION)")
 
 .PHONY: bin/dtc
 

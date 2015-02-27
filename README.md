@@ -1,6 +1,37 @@
 zynq-boot
 =========
 
+The boot.bin file is board specific and contains the MAC address for
+the ethernet, so you need a unique one for each type of board you use
+on a network. If you only have one board, you can use prebuilt images
+from the versioned branch of zynq-boot-filesystems:
+
+* https://github.com/cambridgehackers/zynq-boot-filesystems/tree/v15.02.3
+
+From that link, download:
+
+* https://github.com/cambridgehackers/zynq-boot-filesystems/blob/v15.02.3/sdcard-zynq.zip
+
+also download a bootbin*.zip for your board:
+
+* zedboard: https://github.com/cambridgehackers/zynq-boot-filesystems/blob/v15.02.3/bootbin-zedboard-00e00c009603.zip
+* zc702: https://github.com/cambridgehackers/zynq-boot-filesystems/blob/v15.02.3/bootbin-zc702-00e00c005603.zip
+* zc706: https://github.com/cambridgehackers/zynq-boot-filesystems/blob/v15.02.3/bootbin-zc706-00e00c004f03.zip
+
+My SD card is labeled "ZYNQ" and under Ubuntu mounts as
+/media/jamey/ZYNQ. On OS X it mounts as /Volumes/ZYNQ. Update the
+following with the path to your SD card:
+
+   unzip sdcard-zynq.zip
+   cp sdcard-zynq/* /media/jamey/ZYNQ
+   unzip bootbin*.zip
+   cp bootbin*03/* /media/jamey/ZYNQ
+
+Now eject your SD card, plug it into the Zynq board, and turn it on.
+
+Creating boot.bin
+=================
+
 Scripts to create a boot.bin file for linux on Xilinx Zync
 
 The boot.bin file contains 4 components:
@@ -77,7 +108,7 @@ If you would like to use a different kernel, you can make it from source.
     # step 3: check out the xbsv-2014.04 branch
     git checkout remotes/origin/xbsv-2014.04 -b xbsv-2014.04
 
-    # step 4: configure the kernel
+    # step 4: configure the kernel. We use CodeSourcery 2009q1. The NDK toolchain does not work for this.
     make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- xilinx_zynq_portal_defconfig  
 
     # step 5: make the kernel
