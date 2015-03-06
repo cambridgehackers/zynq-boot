@@ -1,0 +1,7 @@
+the_ROM_image:
+{
+	[bootloader]xxdump0.elf
+	xxdump1.bin
+	xxdump2.elf
+	xxdump3.elf
+}

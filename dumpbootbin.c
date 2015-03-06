@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
         int first = 1;
         if (verbose) {
             char filename[100];
-            sprintf(filename, "xx.dump.%d", file_counter++);
+            sprintf(filename, "xxdump%d.dump", file_counter++);
             dumpfd = creat(filename, 0666);
             printf("dumpfile: %s\n", filename);
         }
