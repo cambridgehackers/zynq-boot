@@ -1,6 +1,8 @@
 the_ROM_image:
 {
 	[bootloader]fsbl.elf
-	system_wrapper.bit
-	base_demo.elf
+	//system_wrapper.bit
+	hw/zybo_bsd/zybobsd.bit
+	//base_demo.elf
+	../zyboapp.elf
 }
