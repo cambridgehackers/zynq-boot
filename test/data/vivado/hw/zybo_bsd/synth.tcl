@@ -3,8 +3,11 @@ create_project -in_memory -part xc7z010clg400-1
 set_property target_language Verilog [current_project]
 set_param project.compositeFile.enableAutoGeneration 0
 
-read_ip ../system_processing_system7_0_0/system_processing_system7_0_0.xci
-generate_target all [get_ips system_processing_system7_0_0]
+create_ip -name processing_system7 -vendor xilinx.com -library ip -module_name processing_system7_0
+set_property -dict [list CONFIG.PCW_USE_M_AXI_GP1 {1} CONFIG.PCW_USE_S_AXI_HP0 {1} CONFIG.PCW_USE_S_AXI_HP1 {1} CONFIG.PCW_USE_S_AXI_HP2 {1} CONFIG.PCW_USE_S_AXI_HP3 {1}] [get_ips processing_system7_0]
+set_property -dict [list CONFIG.PCW_USE_FABRIC_INTERRUPT {1} CONFIG.PCW_IRQ_F2P_INTR {1} CONFIG.PCW_ENET0_PERIPHERAL_ENABLE {1} CONFIG.PCW_ENET0_ENET0_IO {MIO 16 .. 27} CONFIG.PCW_SD0_PERIPHERAL_ENABLE {1} CONFIG.PCW_UART0_PERIPHERAL_ENABLE {0} CONFIG.PCW_UART0_UART0_IO {MIO 50 .. 51} CONFIG.PCW_UART1_PERIPHERAL_ENABLE {1} CONFIG.PCW_USB0_PERIPHERAL_ENABLE {1} CONFIG.PCW_I2C0_PERIPHERAL_ENABLE {1}] [get_ips processing_system7_0]
+set_property -dict [list CONFIG.PCW_UIPARAM_DDR_ADV_ENABLE {0} CONFIG.PCW_UIPARAM_DDR_PARTNO {MT41J128M16 HA-125}] [get_ips processing_system7_0]
+generate_target all [get_files  /scratch/jamey/zynq-boot/test/zybo/zybo.srcs/sources_1/ip/processing_system7_0/processing_system7_0.xci]
 synth_ip [get_ips system_processing_system7_0_0]
 
 read_verilog ../system_wrapper.v
