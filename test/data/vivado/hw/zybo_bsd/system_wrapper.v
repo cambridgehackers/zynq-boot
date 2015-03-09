@@ -22,7 +22,7 @@ module system_wrapper (
 IOBUF iic_0_scl_iobuf (.I(IIC_0_scl_o), .IO(iic_0_scl_io), .O(IIC_0_scl_i), .T(IIC_0_scl_t));
 IOBUF iic_0_sda_iobuf (.I(IIC_0_sda_o), .IO(iic_0_sda_io), .O(IIC_0_sda_i), .T(IIC_0_sda_t));
 
-system_processing_system7_0_0 processing_system7_0
+ps7_0 processing_system7_0
        (.DDR_Addr(DDR_addr), .DDR_BankAddr(DDR_ba),
         .DDR_CAS_n(DDR_cas_n), .DDR_CKE(DDR_cke),
         .DDR_CS_n(DDR_cs_n), .DDR_Clk(DDR_ck_p), .DDR_Clk_n(DDR_ck_n),
@@ -33,7 +33,9 @@ system_processing_system7_0_0 processing_system7_0
         .I2C0_SCL_T(IIC_0_scl_t), .I2C0_SDA_I(IIC_0_sda_i),
         .I2C0_SDA_O(IIC_0_sda_o), .I2C0_SDA_T(IIC_0_sda_t),
         .MIO(FIXED_IO_mio),
-        .PS_CLK(FIXED_IO_ps_clk), .PS_PORB(FIXED_IO_ps_porb), .PS_SRSTB(FIXED_IO_ps_srstb),
-        .SDIO0_WP(0),
-        .USB0_VBUS_PWRFAULT(0));
+        .PS_CLK(FIXED_IO_ps_clk), .PS_PORB(FIXED_IO_ps_porb), .PS_SRSTB(FIXED_IO_ps_srstb)
+//,
+//        .SDIO0_WP(0),
+//        .USB0_VBUS_PWRFAULT(0)
+);
 endmodule
