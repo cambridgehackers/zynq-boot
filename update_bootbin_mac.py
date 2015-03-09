@@ -30,7 +30,7 @@ if len(sys.argv) != 3:
     print 'update_bootbin_mac: Usage: update_bootbin_mac.py <filename> <new_hex_value>'
     sys.exit(1)
 inbuf = open(sys.argv[1], 'r+b').read()
-ind = inbuf.index(target_string)
+ind = inbuf.find(target_string)
 if ind < 0:
     print 'update_bootbin_mac: string not found', target_string
     sys.exit(1)
