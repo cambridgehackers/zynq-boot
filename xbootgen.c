@@ -24,6 +24,8 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <stdint.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
 #include <arpa/inet.h>
 //#ifdef __APPLE__
 //#include <machine/endian.h>
@@ -62,8 +64,11 @@ typedef struct {
     uint32_t name_length;
 } ImageHeader;
 
-static int fdinput[2], fdoutfile;
-static ELF_HEADER elfh[2];
+static int fdoutfile;
+static struct {
+    uint8_t    *data;
+    ELF_HEADER *elfh;
+} input_data[2];
 static ImageHeader imagehead[2];
 static int image_offset[2];
 static unsigned char    buffer[BUFFER_SIZE];
@@ -71,7 +76,7 @@ static BootPartitionHeader partinit[10];
 static struct {
     uint32_t offset;
     uint32_t len;
-    int      fd;
+    uint8_t  *data;
 } partition_data[10];
 static BootPartitionHeader part_data[20];
 
@@ -115,33 +120,33 @@ int main(int argc, char *argv[])
     align_file();
     /* Now build image header table */
     for (index = 0; index < input_file_count; index++) {
+        struct stat st;
+        int fdinput;
         int startsect = imagetab.ImageCount;
-        if ((fdinput[index] = open (argv[index+1], O_RDONLY)) < 0) {
+        if ((fdinput = open (argv[index+1], O_RDONLY)) < 0) {
             printf ("xbootgen <fsbl> <composite>\n");
             exit(-1);
         }
-        if (read(fdinput[index], &(elfh[index]), sizeof(elfh[index])) != sizeof(elfh[0])
-         || elfh[index].h32.e_ident[0] != 0x7f || elfh[index].h32.e_ident[1] != 'E' || elfh[index].h32.e_ident[2] != 'L'
-         || elfh[index].h32.e_ident[3] != 'F' || elfh[index].h32.e_ident[6] != 1
-         || elfh[index].h32.e_type != ET_EXEC || elfh[index].h32.e_ident[4] != 1) {
+        stat(argv[index+1], &st);
+        input_data[index].data = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fdinput, 0);
+        input_data[index].elfh = (ELF_HEADER *)input_data[index].data;
+        if (input_data[index].elfh->h32.e_ident[0] != 0x7f || input_data[index].elfh->h32.e_ident[1] != 'E' || input_data[index].elfh->h32.e_ident[2] != 'L'
+         || input_data[index].elfh->h32.e_ident[3] != 'F' || input_data[index].elfh->h32.e_ident[6] != 1
+         || input_data[index].elfh->h32.e_type != ET_EXEC || input_data[index].elfh->h32.e_ident[4] != 1) {
             printf("Error: input file not valid\n");
         }
-        int len = elfh[index].h32.e_phentsize * elfh[index].h32.e_phnum;
+        int len = input_data[index].elfh->h32.e_phentsize * input_data[index].elfh->h32.e_phnum;
         if (len == 0)
             continue;
-        ELF_PROGRAM *progh = malloc(len);
-        if (lseek(fdinput[index], elfh[index].h32.e_phoff, SEEK_SET) == -1
-         || read(fdinput[index], progh, len) != len) {
-            printf("[%s:%d] error in read\n", __FUNCTION__, __LINE__);
-        }
-        uint32_t enaddr = elfh[index].h32.e_entry;
-        for (entry = 0; entry < elfh[index].h32.e_phnum; ++entry) {
+        ELF_PROGRAM *progh = (ELF_PROGRAM *)&input_data[index].data[input_data[index].elfh->h32.e_phoff];
+        uint32_t enaddr = input_data[index].elfh->h32.e_entry;
+        for (entry = 0; entry < input_data[index].elfh->h32.e_phnum; ++entry) {
             uint32_t datalen = progh->p32[entry].p_filesz;
             if (datalen) {
                 /* As we find partitions, add them to the partition header table */
                 partition_data[imagetab.ImageCount].offset = progh->p32[entry].p_offset;
                 partition_data[imagetab.ImageCount].len = datalen;
-                partition_data[imagetab.ImageCount].fd = fdinput[index];
+                partition_data[imagetab.ImageCount].data = input_data[index].data;
                 partinit[imagetab.ImageCount].ImageWordLen = datalen/4;
                 partinit[imagetab.ImageCount].DataWordLen = datalen/4;
                 partinit[imagetab.ImageCount].PartitionWordLen = datalen/4;
@@ -189,21 +194,9 @@ int main(int argc, char *argv[])
     /* Now copy data from each elf file into target file */
     for (index = 0; index < imagetab.ImageCount; index++) {
         align_file();
-        lseek(partition_data[index].fd, partition_data[index].offset, SEEK_SET);
         uint32_t readlen = partition_data[index].len;
         partinit[index].PartitionStart = lseek(fdoutfile, 0, SEEK_CUR)/4;
-        while (readlen > 0) {
-            int readitem = readlen;
-            if (readitem > sizeof(buffer))
-                readitem = sizeof(buffer);
-            int len = read(partition_data[index].fd, buffer, readitem);
-            if (len != readitem) {
-                printf("tried to read file %d length %d actual %d\n", index, readitem, len);
-                exit(1);
-            }
-            write(fdoutfile, buffer, len);
-            readlen -= len;
-        }
+        write(fdoutfile, &partition_data[index].data[partition_data[index].offset], partition_data[index].len);
     }
 
     /* fixup header tables */
