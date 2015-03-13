@@ -25,44 +25,14 @@
 #include <fcntl.h>
 #include <stdint.h>
 #include <arpa/inet.h>
-#ifdef __APPLE__
-#include <machine/endian.h>
-#else
-#include <endian.h>
-#endif
+//#ifdef __APPLE__
+//#include <machine/endian.h>
+//#else
+//#include <endian.h>
+//#endif
+#include "elfdef.h"
 
 #define BUFFER_SIZE 1024
-
-/************ elf header structures ****************/
-typedef struct {
-    unsigned char e_ident[16];
-    uint16_t  e_type;
-#define ET_EXEC 2
-    uint16_t  e_machine;
-    uint32_t  e_version;
-    uint32_t  e_entry;
-    uint32_t  e_phoff;
-    uint32_t  e_shoff;
-    uint32_t  e_flags;
-    uint16_t  e_ehsize;
-    uint16_t  e_phentsize;
-    uint16_t  e_phnum;
-    uint16_t  e_shentsize;
-    uint16_t  e_shnum;
-    uint16_t  e_shstrndx;
-} elf_header;
-
-enum{PT_NULL, PT_LOAD, PT_DYNAMIC, PT_INTERP, PT_NOTE, PT_SHLIB, PT_PHDR};
-typedef struct {
-    uint32_t  p_type;
-    uint32_t  p_offset;
-    uint32_t  p_vaddr;
-    uint32_t  p_paddr;
-    uint32_t  p_filesz;
-    uint32_t  p_memsz;
-    uint32_t  p_flags;
-    uint32_t  p_align;
-} program_header;
 
 /************ boot.bin header structures ****************/
 #define ATTRIBUTE_PS_IMAGE_MASK  0x10    /**< Code partition */
@@ -93,7 +63,7 @@ typedef struct {
 } ImageHeader;
 
 static int fdinput[2], fdoutfile;
-static elf_header       elfh[2];
+static ELF_HEADER elfh[2];
 static ImageHeader imagehead[2];
 static int image_offset[2];
 static unsigned char    buffer[BUFFER_SIZE];
@@ -151,31 +121,31 @@ int main(int argc, char *argv[])
             exit(-1);
         }
         if (read(fdinput[index], &(elfh[index]), sizeof(elfh[index])) != sizeof(elfh[0])
-         || elfh[index].e_ident[0] != 0x7f || elfh[index].e_ident[1] != 'E' || elfh[index].e_ident[2] != 'L'
-         || elfh[index].e_ident[3] != 'F' || elfh[index].e_ident[6] != 1
-         || elfh[index].e_type != ET_EXEC || elfh[index].e_ident[4] != 1) {
+         || elfh[index].h32.e_ident[0] != 0x7f || elfh[index].h32.e_ident[1] != 'E' || elfh[index].h32.e_ident[2] != 'L'
+         || elfh[index].h32.e_ident[3] != 'F' || elfh[index].h32.e_ident[6] != 1
+         || elfh[index].h32.e_type != ET_EXEC || elfh[index].h32.e_ident[4] != 1) {
             printf("Error: input file not valid\n");
         }
-        int len = elfh[index].e_phentsize * elfh[index].e_phnum;
+        int len = elfh[index].h32.e_phentsize * elfh[index].h32.e_phnum;
         if (len == 0)
             continue;
-        program_header *progh = malloc(len);
-        if (lseek(fdinput[index], elfh[index].e_phoff, SEEK_SET) == -1
+        ELF_PROGRAM *progh = malloc(len);
+        if (lseek(fdinput[index], elfh[index].h32.e_phoff, SEEK_SET) == -1
          || read(fdinput[index], progh, len) != len) {
             printf("[%s:%d] error in read\n", __FUNCTION__, __LINE__);
         }
-        uint32_t enaddr = elfh[index].e_entry;
-        for (entry = 0; entry < elfh[index].e_phnum; ++entry) {
-            uint32_t datalen = progh[entry].p_filesz;
+        uint32_t enaddr = elfh[index].h32.e_entry;
+        for (entry = 0; entry < elfh[index].h32.e_phnum; ++entry) {
+            uint32_t datalen = progh->p32[entry].p_filesz;
             if (datalen) {
                 /* As we find partitions, add them to the partition header table */
-                partition_data[imagetab.ImageCount].offset = progh[entry].p_offset;
+                partition_data[imagetab.ImageCount].offset = progh->p32[entry].p_offset;
                 partition_data[imagetab.ImageCount].len = datalen;
                 partition_data[imagetab.ImageCount].fd = fdinput[index];
                 partinit[imagetab.ImageCount].ImageWordLen = datalen/4;
                 partinit[imagetab.ImageCount].DataWordLen = datalen/4;
                 partinit[imagetab.ImageCount].PartitionWordLen = datalen/4;
-                partinit[imagetab.ImageCount].LoadAddr = progh[entry].p_paddr;
+                partinit[imagetab.ImageCount].LoadAddr = progh->p32[entry].p_paddr;
                 partinit[imagetab.ImageCount].ExecAddr = enaddr;
                 partinit[imagetab.ImageCount].PartitionAttr = ATTRIBUTE_PS_IMAGE_MASK;
                 partinit[imagetab.ImageCount].SectionCount = 0;
