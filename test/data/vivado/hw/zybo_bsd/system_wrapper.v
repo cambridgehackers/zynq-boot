@@ -34,8 +34,5 @@ ps7_0 processing_system7_0
         .I2C0_SDA_O(IIC_0_sda_o), .I2C0_SDA_T(IIC_0_sda_t),
         .MIO(FIXED_IO_mio),
         .PS_CLK(FIXED_IO_ps_clk), .PS_PORB(FIXED_IO_ps_porb), .PS_SRSTB(FIXED_IO_ps_srstb)
-//,
-//        .SDIO0_WP(0),
-//        .USB0_VBUS_PWRFAULT(0)
 );
 endmodule
