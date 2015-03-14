@@ -117,13 +117,13 @@ clean:
 realclean: clean
 	rm -fr filesystems/*
 
-real.bootbin: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf xbootgen reserved_for_interrupts.tmp
+real.bootbin: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf xbootgen
 	if [ -f boot.bin ]; then mv -v boot.bin boot.bin.bak; fi
 	cp -f imagefiles/zynq_$(BOARD)_fsbl.elf zynq_fsbl.elf
 	./xbootgen zynq_fsbl.elf zcomposite.elf
 	./update_bootbin_mac.py boot.bin $(MACBYTE)
 ifeq ($(DELETE_TEMP_FILES),1)
-	rm -f zynq_fsbl.elf zcomposite.elf reserved_for_interrupts.tmp
+	rm -f zynq_fsbl.elf zcomposite.elf
 endif
 
 # daffodil's zedboard uses this macaddress: 00:e0:0c:00:98:03 
@@ -167,18 +167,22 @@ ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f ramdisk.image.temp ramdisk.image.temp1
 endif
 
-xbootgen: xbootgen.c Makefile
+xbootgen: xbootgen.c Makefile reserved_for_interrupts.h
 	gcc -g -o xbootgen xbootgen.c
+ifeq ($(DELETE_TEMP_FILES),1)
+	rm -f reserved_for_interrupts.h
+endif
 
 dumpbootbin: dumpbootbin.c Makefile
 	gcc -g -o dumpbootbin dumpbootbin.c
 
-reserved_for_interrupts.tmp: reserved_for_interrupts.S
+reserved_for_interrupts.h: reserved_for_interrupts.S
 	$(PREFIX)gcc -c reserved_for_interrupts.S
 	$(PREFIX)ld -Ttext 0 -e 0 -o i.tmp reserved_for_interrupts.o
 	$(PREFIX)objcopy -O binary -I elf32-little i.tmp reserved_for_interrupts.tmp
+	./bin2header.py reserved_for_interrupts.tmp >reserved_for_interrupts.h
 ifeq ($(DELETE_TEMP_FILES),1)
-	rm -f i.tmp reserved_for_interrupts.o
+	rm -f i.tmp reserved_for_interrupts.o reserved_for_interrupts.tmp
 endif
 
 real.zImage: bin/dtc

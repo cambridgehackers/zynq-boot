@@ -31,6 +31,7 @@ typedef struct {
     uint32_t ImageCount;
     uint32_t PartitionOffset;
     uint32_t ImageOffset;
+    uint32_t unknown;
 } ImageHeaderTable;
 typedef struct {
     uint32_t ImageWordLen;
@@ -52,3 +53,5 @@ typedef struct {
 } ImageHeader;
 
 #define ROM_HEADER 0xaa995566, 0x584c4e58, 0, 0x1010000
+//#define BOOTGEN_VERSION 0x1010000
+#define BOOTGEN_VERSION 0x1020000
