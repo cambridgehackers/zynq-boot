@@ -23,26 +23,9 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <stdint.h>
+#include "bootdef.h"
 
 #define DUMP_SIZE 64
-#define IMAGE_PHDR_OFFSET 0x09C    /* Start of partition headers */
-
-/* Attribute word defines */
-//ATTRIBUTE_PS_IMAGE_MASK        = 0x10    /**< Code partition */
-//ATTRIBUTE_PL_IMAGE_MASK        = 0x20    /**< Bit stream partition */
-typedef struct {
-    uint32_t ImageWordLen;
-    uint32_t DataWordLen;
-    uint32_t PartitionWordLen;
-    uint32_t LoadAddr;
-    uint32_t ExecAddr;
-    uint32_t PartitionStart;
-    uint32_t PartitionAttr;
-    uint32_t SectionCount;
-    uint32_t Pads[7];
-    uint32_t CheckSum;
-} BootPartitionHeader;
-
 static int fd, end_of_file = 0;
 static unsigned char buffer[DUMP_SIZE];
 

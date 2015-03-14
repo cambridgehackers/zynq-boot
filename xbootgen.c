@@ -33,37 +33,10 @@
 //#include <endian.h>
 //#endif
 #include "elfdef.h"
+#include "bootdef.h"
 
 #define BUFFER_SIZE 1024
 #define INPUT_FILE_MAX    10
-
-/************ boot.bin header structures ****************/
-#define ATTRIBUTE_PS_IMAGE_MASK  0x10    /**< Code partition */
-#define ATTRIBUTE_PL_IMAGE_MASK  0x20    /**< Bit stream partition */
-typedef struct {
-    uint32_t Version;
-    uint32_t ImageCount;
-    uint32_t PartitionOffset;
-    uint32_t ImageOffset;
-} ImageHeaderTable;
-typedef struct {
-    uint32_t ImageWordLen;
-    uint32_t DataWordLen;
-    uint32_t PartitionWordLen;
-    uint32_t LoadAddr;
-    uint32_t ExecAddr;
-    uint32_t PartitionStart;
-    uint32_t PartitionAttr;
-    uint32_t SectionCount;
-    uint32_t Pads[7];
-    uint32_t CheckSum;
-} BootPartitionHeader;
-typedef struct {
-    uint32_t next;
-    uint32_t partition;
-    uint32_t count;
-    uint32_t name_length;
-} ImageHeader;
 
 static int         fdoutfile;
 static uint8_t    *input_data[INPUT_FILE_MAX];
@@ -78,8 +51,7 @@ static struct {
 
 /* From TRM, Chapter 6: Boot and Configuration */
 static ImageHeaderTable imagetab = {0x1010000};
-static uint32_t boot_rom_header[32] = {
-	0xaa995566, 0x584c4e58, 0, 0x1010000, };
+static uint32_t boot_rom_header[32] = {ROM_HEADER};
 static uint8_t elfmagic[] = {ELF_MAGIC};
 
 static void align_file(void)
@@ -110,9 +82,9 @@ static void addPartition(uint8_t *data, uint32_t datalen, uint32_t addr, uint32_
 
 int main(int argc, char *argv[])
 {
-    int i, index, j, entry, input_file_count = 2;
+    int i, index, j, entry;
 
-    if (argc != input_file_count + 1 || (fdoutfile = creat ("boot.bin", 0666)) < 0) {
+    if ((fdoutfile = creat ("boot.bin", 0666)) < 0) {
         printf ("xbootgen <fsbl> <composite>\n");
         exit(-1);
     }
@@ -132,9 +104,10 @@ int main(int argc, char *argv[])
     }
     align_file();
     /* Now build image header table */
-    for (index = 0; index < input_file_count; index++) {
+    for (index = 0; index < argc - 1; index++) {
         struct stat st;
         int fdinput;
+        int startsect = imagetab.ImageCount;
         if ((fdinput = open (argv[index+1], O_RDONLY)) < 0) {
             printf ("xbootgen <fsbl> <composite>\n");
             exit(-1);
@@ -144,10 +117,11 @@ int main(int argc, char *argv[])
         ELF_HEADER *elfh = (ELF_HEADER *)input_data[index];
         if (memcmp(input_data[index], elfmagic, sizeof(elfmagic)) || elfh->h32.e_ident[6] != 1
          || elfh->h32.e_type != ET_EXEC || elfh->h32.e_ident[4] != 1) {
-            printf("Error: input file not valid\n");
+            printf("xbootgen: input file not elf\n");
+            addPartition(input_data[index], st.st_size, 0, 0, startsect);
+            continue;
         }
         ELF_PROGRAM *progh = (ELF_PROGRAM *)&input_data[index][elfh->h32.e_phoff];
-        int startsect = imagetab.ImageCount;
         uint32_t enaddr = elfh->h32.e_entry;
         for (entry = 0; entry < elfh->h32.e_phnum; ++entry) {
             uint32_t datalen = progh->p32[entry].p_filesz;
@@ -165,7 +139,7 @@ int main(int argc, char *argv[])
 
     /* Now build image table entry for each input file */
     imagetab.ImageOffset = lseek(fdoutfile, 0, SEEK_CUR)/4;
-    for (index = 0; index < input_file_count; index++) {
+    for (index = 0; index < argc - 1; index++) {
         union {
             char c[200];
             uint32_t i[50];
@@ -217,8 +191,8 @@ int main(int argc, char *argv[])
     }
 
     /* rewrite header tables */
-    for (index = 0; index < input_file_count; index++) {
-        if (index < input_file_count - 1)
+    for (index = 0; index < argc - 1; index++) {
+        if (index < argc - 1 - 1)
             imagehead[index].next = image_offset[index+1]/4;
         imagehead[index].partition += partinit_offset/4;
         lseek(fdoutfile, image_offset[index], SEEK_SET);
