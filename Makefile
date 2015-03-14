@@ -96,6 +96,7 @@ $(miniitx100targets):
 	make BOARD=miniitx100 real.$(basename $@)
 #################################################################################################
 # zybo
+zybo-BITFILE := bitfile/zybo/zybobsd.bit
 zybotargets = $(addsuffix .zybo, $(targetnames))
 zybotargets: $(zybotargets)
 $(zybotargets):
@@ -119,11 +120,10 @@ realclean: clean
 
 real.bootbin: zcomposite.elf imagefiles/zynq_$(BOARD)_fsbl.elf xbootgen
 	if [ -f boot.bin ]; then mv -v boot.bin boot.bin.bak; fi
-	cp -f imagefiles/zynq_$(BOARD)_fsbl.elf zynq_fsbl.elf
-	./xbootgen zynq_fsbl.elf zcomposite.elf
+	./xbootgen imagefiles/zynq_$(BOARD)_fsbl.elf $($(BOARD)-BITFILE) zcomposite.elf
 	./update_bootbin_mac.py boot.bin $(MACBYTE)
 ifeq ($(DELETE_TEMP_FILES),1)
-	rm -f zynq_fsbl.elf zcomposite.elf
+	rm -f zcomposite.elf
 endif
 
 # daffodil's zedboard uses this macaddress: 00:e0:0c:00:98:03 
