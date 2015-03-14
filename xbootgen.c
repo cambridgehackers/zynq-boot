@@ -65,15 +65,15 @@ typedef struct {
     uint32_t name_length;
 } ImageHeader;
 
-static int fdoutfile;
+static int         fdoutfile;
 static uint8_t    *input_data[INPUT_FILE_MAX];
 static ImageHeader imagehead[INPUT_FILE_MAX];
-static int image_offset[INPUT_FILE_MAX];
-static unsigned char    buffer[BUFFER_SIZE];
+static int         image_offset[INPUT_FILE_MAX];
+static uint8_t     buffer[BUFFER_SIZE];
 static BootPartitionHeader partinit[10];
 static struct {
-    uint32_t len;
     uint8_t  *datap;
+    uint32_t len;
 } partition_data[10];
 
 /* From TRM, Chapter 6: Boot and Configuration */
@@ -84,12 +84,28 @@ static uint8_t elfmagic[] = {ELF_MAGIC};
 
 static void align_file(void)
 {
-    static unsigned char fillbyte = 0xff;
+    static uint8_t fillbyte = 0xff;
     int filllen = 0x40 - (lseek(fdoutfile, 0, SEEK_CUR) & 0x3f);
     if (filllen != 0x40) {
         while(filllen-- > 0)
             write(fdoutfile, &fillbyte, sizeof(fillbyte));
     }
+}
+
+static void addPartition(uint8_t *data, uint32_t datalen, uint32_t addr, uint32_t enaddr, uint32_t startsect)
+{
+    partition_data[imagetab.ImageCount].datap = data;
+    partition_data[imagetab.ImageCount].len = datalen;
+    partinit[imagetab.ImageCount].ImageWordLen = datalen/4;
+    partinit[imagetab.ImageCount].DataWordLen = datalen/4;
+    partinit[imagetab.ImageCount].PartitionWordLen = datalen/4;
+    partinit[imagetab.ImageCount].LoadAddr = addr;
+    partinit[imagetab.ImageCount].ExecAddr = enaddr;
+    partinit[imagetab.ImageCount].PartitionAttr = ATTRIBUTE_PS_IMAGE_MASK;
+    partinit[imagetab.ImageCount].SectionCount = 0;
+    partinit[imagetab.ImageCount].Pads[1] = startsect * sizeof(partinit[0])/4;
+    partinit[startsect].SectionCount++;
+    imagetab.ImageCount++;
 }
 
 int main(int argc, char *argv[])
@@ -137,18 +153,8 @@ int main(int argc, char *argv[])
             uint32_t datalen = progh->p32[entry].p_filesz;
             if (datalen) {
                 /* As we find partitions, add them to the partition header table */
-                partition_data[imagetab.ImageCount].len = datalen;
-                partition_data[imagetab.ImageCount].datap = &input_data[index][progh->p32[entry].p_offset];
-                partinit[imagetab.ImageCount].ImageWordLen = datalen/4;
-                partinit[imagetab.ImageCount].DataWordLen = datalen/4;
-                partinit[imagetab.ImageCount].PartitionWordLen = datalen/4;
-                partinit[imagetab.ImageCount].LoadAddr = progh->p32[entry].p_paddr;
-                partinit[imagetab.ImageCount].ExecAddr = enaddr;
-                partinit[imagetab.ImageCount].PartitionAttr = ATTRIBUTE_PS_IMAGE_MASK;
-                partinit[imagetab.ImageCount].SectionCount = 0;
-                partinit[imagetab.ImageCount].Pads[1] = startsect * sizeof(partinit[0])/4;
-                partinit[startsect].SectionCount++;
-                imagetab.ImageCount++;
+                addPartition(&input_data[index][progh->p32[entry].p_offset],
+                    datalen, progh->p32[entry].p_paddr, enaddr, startsect);
                 enaddr = 0;
             }
         }
