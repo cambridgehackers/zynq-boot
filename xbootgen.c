@@ -65,10 +65,7 @@ typedef struct {
 } ImageHeader;
 
 static int fdoutfile;
-static struct {
-    uint8_t    *data;
-    ELF_HEADER *elfh;
-} input_data[2];
+static uint8_t    *input_data[2];
 static ImageHeader imagehead[2];
 static int image_offset[2];
 static unsigned char    buffer[BUFFER_SIZE];
@@ -128,25 +125,25 @@ int main(int argc, char *argv[])
             exit(-1);
         }
         stat(argv[index+1], &st);
-        input_data[index].data = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fdinput, 0);
-        input_data[index].elfh = (ELF_HEADER *)input_data[index].data;
-        if (input_data[index].elfh->h32.e_ident[0] != 0x7f || input_data[index].elfh->h32.e_ident[1] != 'E' || input_data[index].elfh->h32.e_ident[2] != 'L'
-         || input_data[index].elfh->h32.e_ident[3] != 'F' || input_data[index].elfh->h32.e_ident[6] != 1
-         || input_data[index].elfh->h32.e_type != ET_EXEC || input_data[index].elfh->h32.e_ident[4] != 1) {
+        input_data[index] = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fdinput, 0);
+        ELF_HEADER *elfh = (ELF_HEADER *)input_data[index];
+        uint8_t elfmagic[] = {ELF_MAGIC};
+        if (memcmp(input_data[index], elfmagic, sizeof(elfmagic)) || elfh->h32.e_ident[6] != 1
+         || elfh->h32.e_type != ET_EXEC || elfh->h32.e_ident[4] != 1) {
             printf("Error: input file not valid\n");
         }
-        int len = input_data[index].elfh->h32.e_phentsize * input_data[index].elfh->h32.e_phnum;
+        int len = elfh->h32.e_phentsize * elfh->h32.e_phnum;
         if (len == 0)
             continue;
-        ELF_PROGRAM *progh = (ELF_PROGRAM *)&input_data[index].data[input_data[index].elfh->h32.e_phoff];
-        uint32_t enaddr = input_data[index].elfh->h32.e_entry;
-        for (entry = 0; entry < input_data[index].elfh->h32.e_phnum; ++entry) {
+        ELF_PROGRAM *progh = (ELF_PROGRAM *)&input_data[index][elfh->h32.e_phoff];
+        uint32_t enaddr = elfh->h32.e_entry;
+        for (entry = 0; entry < elfh->h32.e_phnum; ++entry) {
             uint32_t datalen = progh->p32[entry].p_filesz;
             if (datalen) {
                 /* As we find partitions, add them to the partition header table */
                 partition_data[imagetab.ImageCount].offset = progh->p32[entry].p_offset;
                 partition_data[imagetab.ImageCount].len = datalen;
-                partition_data[imagetab.ImageCount].data = input_data[index].data;
+                partition_data[imagetab.ImageCount].data = input_data[index];
                 partinit[imagetab.ImageCount].ImageWordLen = datalen/4;
                 partinit[imagetab.ImageCount].DataWordLen = datalen/4;
                 partinit[imagetab.ImageCount].PartitionWordLen = datalen/4;

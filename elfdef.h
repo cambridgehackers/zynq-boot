@@ -136,3 +136,5 @@ typedef union {
     Elf32_Phdr p32[1];
     Elf64_Phdr p64[1];
 } ELF_PROGRAM;
+
+#define ELF_MAGIC 0x7f, 'E', 'L', 'F'
