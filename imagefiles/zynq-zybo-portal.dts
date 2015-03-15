@@ -18,7 +18,7 @@
 
 	soc {
 		compatible = "xlnx,zynq";
-		clock-frequency = <33333333>;
+		clock-frequency = <50000000>;
 	};
 
 	pmu {
@@ -68,7 +68,7 @@
 			reg = <0xe0001000 0x1000>;
 			interrupts = <0 50 4>;
 			interrupt-parent = <&gic>;
-			clock = <50000000>;
+			#clock = <50000000>;
 		};
 
 		slcr: slcr@f8000000 {
@@ -103,7 +103,7 @@
 				} ;
 				ps_clk: ps_clk {
 					#clock-cells = <0>;
-					clock-frequency = <33333333>;
+					clock-frequency = <50000000>;
 					clock-output-names = "ps_clk";
 					compatible = "fixed-clock";
 				} ;
@@ -142,7 +142,7 @@
 			device_type = "watchdog";
 			compatible = "arm,mpcore_wdt";
 			reg = <0xf8f00620 0x20>;
-			clock-frequency = <333333333>;
+			clock-frequency = <50000000>;
 			reset = <1>;
 		};
 
@@ -217,7 +217,7 @@
 			xlnx,has-cd = <0x1>;
 			interrupts = <0 24 4>;
 			interrupt-parent = <&gic>;
-			clock-frequency = <33333000>;
+			clock-frequency = <50000000>;
 		};
 
 		usb@e0002000 {

@@ -127,18 +127,11 @@ ifeq ($(DELETE_TEMP_FILES),1)
 endif
 
 # daffodil's zedboard uses this macaddress: 00:e0:0c:00:98:03 
-dtswork.tmp:
-	echo MACBYTE=$(MACBYTE)
-	#sed s/73/$(MACBYTE)/ <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
-	cat <imagefiles/zynq-$(BOARD)-portal.dts >dtswork.tmp
 
 # if [ -f $(DTC) ]; then echo $(DTC); else make $(DTC); fi
-INVOKE_DTC = $(DTC) -I dts -O dtb -o dtb.tmp dtswork.tmp
-dtb.tmp: imagefiles/zynq-$(BOARD)-portal.dts dtswork.tmp
+INVOKE_DTC = $(DTC) -I dts -O dtb -o dtb.tmp imagefiles/zynq-$(BOARD)-portal.dts
+dtb.tmp: imagefiles/zynq-$(BOARD)-portal.dts
 	$(INVOKE_DTC) || make $(DTC); $(INVOKE_DTC)
-ifeq ($(DELETE_TEMP_FILES),1)
-	rm -f dtswork.tmp
-endif
 
 zcomposite.elf: ramdisk dtb.tmp
 	echo "******** PRINT GCC CONFIGURE OPTIONS *******"
