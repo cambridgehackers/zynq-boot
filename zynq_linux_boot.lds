@@ -8,8 +8,9 @@ SECTIONS
 	     d.tmp(.data);
          }
          .textz (0x1008000): {
-             start = .;
-             c.tmp(.data);
+             start:
+             clearreg.o(.text);
+             _start_linux:
              z.tmp(.data);
          }
 }
