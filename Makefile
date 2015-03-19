@@ -171,6 +171,13 @@ ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f i.tmp reserved_for_interrupts.o reserved_for_interrupts.tmp
 endif
 
+zynqdrivers: zImage
+	[ -d connectal ] || git clone git://github.com/cambridgehackers/connectal
+	cd connectal; git pull origin master
+	cd connectal; make zynqdrivers
+	cp connectal/drivers/zynqportal/zynqportal.ko imagefiles
+	cp connectal/drivers/portalmem/portalmem.ko imagefiles
+
 zImage: bin/dtc
 	cp linux-xlnx/arch/arm/boot/zImage imagefiles/zImage
 
