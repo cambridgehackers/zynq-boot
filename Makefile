@@ -21,31 +21,27 @@ PREFIX=$(NDK_OBJDUMP:%-objdump=%-)
 KERNELID=3.9.0-00054-g7b6edac-dirty
 DELETE_TEMP_FILES?=1
 
-targetnames = bootbin sdcard all zImage
+targetnames = bootbin sdcard all
 
 all:
 	@echo "Please type one of the following:"
 	@echo "    make sdcard-zynq.zip"
 	@echo "    make bootbin.zedboard"
 	@echo "    make sdcard.zedboard"
-	@echo "    make zImage.zedboard"
 	@echo "    make all.zedboard"
 	@echo "    make bootbin.zc702"
 	@echo "    make sdcard.zc702"
-	@echo "    make zImage.zc702"
 	@echo "    make all.zc702"
 	@echo "    make bootbin.zc706"
 	@echo "    make sdcard.zc706"
-	@echo "    make zImage.zc706"
 	@echo "    make all.zc706"
 	@echo "    make bootbin.miniitx100"
 	@echo "    make sdcard.miniitx100"
-	@echo "    make zImage.miniitx100"
 	@echo "    make all.miniitx100"
 	@echo "    make bootbin.zybo"
 	@echo "    make sdcard.zybo"
-	@echo "    make zImage.zybo"
 	@echo "    make all.zybo"
+	@echo "    make zImage"
 
 #################################################################################################
 # zedboard
@@ -175,7 +171,7 @@ ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f i.tmp reserved_for_interrupts.o reserved_for_interrupts.tmp
 endif
 
-real.zImage: bin/dtc
+zImage: bin/dtc
 	cp linux-xlnx/arch/arm/boot/zImage imagefiles/zImage
 
 real.sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BOARD)/boot.bin
