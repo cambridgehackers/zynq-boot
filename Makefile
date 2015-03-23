@@ -42,6 +42,7 @@ all:
 	@echo "    make sdcard.zybo"
 	@echo "    make all.zybo"
 	@echo "    make zImage"
+	@echo "    make zynqdrivers"
 
 #################################################################################################
 # zedboard
