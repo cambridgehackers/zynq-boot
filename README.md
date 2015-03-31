@@ -159,6 +159,25 @@ To make boot.bin files for multiple devices that are attached to the network at 
 
     make bootbin.zedboard USER=uniquetringforboard
 
+Webserver
+=========
+
+The webserver in zynq-boot/imagefiles/webserver is from the webui
+repo. It provides a websocket server so that a browser can communicate
+with the zedboard to download and run applications.
+
+    https://github.com/cambridgehackers/webui/blob/master/src/zedboard-server.c
+
+You can build it using ndk-build:
+
+    git clone git://github.com/cambridgehackers/webui
+    cd webui
+    ndk-build
+
+There is a target to build it in zynq-boot:
+    cd zynq-boot; make webserver
+
+
 Adding new boards
 =================
 

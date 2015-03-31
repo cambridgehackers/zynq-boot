@@ -259,6 +259,11 @@ bin/dtc:
 	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) $(MACHEADERS) M=scripts/dtc; \
 	cp -fv scripts/dtc/dtc ../bin/dtc)
 
+webserver:
+	if [ -d webui ]; then true; else git clone git://github.com/cambridgehackers/webui.git; fi
+	cd webui; ndk-build
+	cp webui/libs/armeabi/webserver imagefiles/webserver
+
 parallella-boot:  ramdisk dtb.tmp
 	# create ouput area
 	mkdir -p parallella-images
