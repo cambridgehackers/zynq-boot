@@ -65,7 +65,6 @@ zedboard-adb:
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/system.img    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/timelimit    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/webserver    /mnt/sdcard
-	adb -s $(RUNPARAM):5555 push sdcard-zedboard/fpgajtag    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/userdata.img    /mnt/sdcard
 	adb -s $(RUNPARAM):5555 push sdcard-zedboard/zynqportal.ko  /mnt/sdcard
 	adb -s $(RUNPARAM):5555 shell sync
@@ -183,7 +182,7 @@ zImage: bin/dtc
 	cp linux-xlnx/arch/arm/boot/zImage imagefiles/zImage
 
 real.sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BOARD)/boot.bin
-	cp -v imagefiles/zynqportal.ko imagefiles/portalmem.ko imagefiles/timelimit imagefiles/webserver imagefiles/fpgajtag sdcard-$(BOARD)/
+	cp -v imagefiles/zynqportal.ko imagefiles/portalmem.ko imagefiles/timelimit imagefiles/webserver sdcard-$(BOARD)/
 	[ -e sdcard-$(BOARD)/$(KERNELID) ] || mkdir sdcard-$(BOARD)/$(KERNELID)
 	echo "Files for $(BOARD) SD Card are in $(PWD)/sdcard-$(BOARD)"
 
@@ -223,7 +222,7 @@ endif
 sdcard-zynq.zip:
 	make all.zedboard
 	mv sdcard-zedboard sdcard-zynq
-	zip sdcard-zynq.zip sdcard-zynq/*.img sdcard-zynq/timelimit sdcard-zynq/webserver sdcard-zynq/fpgajtag
+	zip sdcard-zynq.zip sdcard-zynq/*.img sdcard-zynq/timelimit sdcard-zynq/webserver
 	mv sdcard-zynq sdcard-zedboard
 
 bootbin.zip:
