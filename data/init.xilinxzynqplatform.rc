@@ -6,3 +6,19 @@ on early-init
     mount vfat /dev/block/mmcblk0p1 /mnt/sdcard rw wait
     mount ext4 loop@/mnt/sdcard/system.img /system rw wait
     mount ext4 loop@/mnt/sdcard/userdata.img /data rw nosuid nodev wait
+    chown 0 /fpgajtag
+    chgrp 0 /fpgajtag
+    chmod 4755 /fpgajtag
+    mount tmpfs tmpfs /mnt/sdcard/tmp
+    class_start zynq
+
+service webserver /mnt/sdcard/webserver
+    class zynq
+    user root
+    group root
+
+service zynqmodules /zynqmodules.sh
+    once
+    class zynq
+    user root
+    group root
