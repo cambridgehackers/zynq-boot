@@ -490,8 +490,3 @@ service mdnsd /system/bin/mdnsd
     socket mdnsd stream 0660 mdnsr inet
     disabled
     oneshot
-
-service webserver /mnt/sdcard/webserver
-    class main
-    user root
-    group root
