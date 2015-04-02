@@ -21,7 +21,7 @@ PREFIX?=$(BOOTBIN_NDK_OBJDUMP:%-objdump=%-)
 
 KERNEL_CROSS?=arm-linux-gnueabi-
 
-KERNELID=3.9.0-00054-g7b6edac-dirty
+KERNELID=3.9.0-00055-g6f85fcc
 DELETE_TEMP_FILES?=1
 
 targetnames = bootbin sdcard all
