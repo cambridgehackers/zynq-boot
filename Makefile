@@ -2,7 +2,7 @@
 OS := $(shell uname)
 
 #NDKPATH=/scratch/android-ndk-r9d/
-# NDK_OBJDUMP=$(shell $(NDKPATH)ndk-which objdump)
+# BOOTBIN_NDK_OBJDUMP=$(shell $(NDKPATH)ndk-which objdump)
 # NDK_GCC=$(shell $(NDKPATH)ndk-which gcc)
 
 ifeq ($(OS), Darwin)
@@ -15,12 +15,14 @@ DTC=./bin/dtc
 endif
 MKFS=/sbin/mkfs
 
-#NDK_OBJDUMP=arm-none-linux-gnueabi-objdump
-#NDK_GCC=arm-none-linux-gnueabi-gcc
-NDK_OBJDUMP=$(shell ndk-which objdump)
-NDK_GCC=$(shell ndk-which gcc)
+#BOOTBIN_NDK_OBJDUMP?=arm-none-linux-gnueabi-objdump
+BOOTBIN_NDK_OBJDUMP?=$(shell ndk-which objdump)
+PREFIX?=$(BOOTBIN_NDK_OBJDUMP:%-objdump=%-)
 
-PREFIX=$(NDK_OBJDUMP:%-objdump=%-)
+#KERNEL_NDK_GCC?=arm-none-linux-gnueabi-gcc
+KERNEL_NDK_GCC?=arm-linux-gnueabi-gcc
+KERNEL_CROSS?=$(shell echo $(KERNEL_NDK_GCC) | sed s/gcc//)
+
 KERNELID=3.9.0-00054-g7b6edac-dirty
 DELETE_TEMP_FILES?=1
 
@@ -255,11 +257,17 @@ update-zynq-boot-filesystems:
 bin/dtc:
 	if [ -d linux-xlnx ]; then true; else git clone git://github.com/cambridgehackers/linux-xlnx.git; fi
 	(cd linux-xlnx; \
-	git checkout remotes/origin/connectal-2014.04 -b connectal-2014.04; \
-	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) $(MACHEADERS) xilinx_zynq_portal_defconfig; \
-	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) $(MACHEADERS) -j8 zImage; \
-	make ARCH=arm CROSS_COMPILE=$(shell echo $(NDK_GCC) | sed s/gcc//) $(MACHEADERS) M=scripts/dtc; \
+	git fetch; \
+	git checkout origin/connectal-2014.04 -b connectal-2014.04; \
+	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) xilinx_zynq_portal_defconfig; \
+	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) -j8 zImage; \
+	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) M=scripts/dtc; \
 	cp -fv scripts/dtc/dtc ../bin/dtc)
+
+zImage-clean:
+	if [ -d linux-xlnx ]; then true; else git clone git://github.com/cambridgehackers/linux-xlnx.git; fi
+	(cd linux-xlnx; \
+	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) clean)
 
 webserver:
 	if [ -d webui ]; then true; else git clone git://github.com/cambridgehackers/webui.git; fi
