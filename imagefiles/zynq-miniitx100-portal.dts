@@ -33,8 +33,9 @@
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
-	compatible = "xlnx,zynq-zc770";
         model = "Xilinx Zynq";
+	compatible = "xlnx,zynq-7000";
+	zynqbootboard = "miniitx100";
 	aliases {
 		ethernet0 = &ps7_ethernet_0;
 		serial0 = &ps7_uart_1;

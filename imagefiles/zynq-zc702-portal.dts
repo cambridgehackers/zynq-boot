@@ -2,7 +2,8 @@
 
 / {
 	model = "Xilinx Zynq ZC702";
-	compatible = "xlnx,zynq-zc702";
+	compatible = "xlnx,zynq-7000";
+	zynqbootboard = "zc702";
 	#address-cells = <0x1>;
 	#size-cells = <0x1>;
 	interrupt-parent = <0x1>;
