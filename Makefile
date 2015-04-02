@@ -19,9 +19,7 @@ MKFS=/sbin/mkfs
 BOOTBIN_NDK_OBJDUMP?=$(shell ndk-which objdump)
 PREFIX?=$(BOOTBIN_NDK_OBJDUMP:%-objdump=%-)
 
-#KERNEL_NDK_GCC?=arm-none-linux-gnueabi-gcc
-KERNEL_NDK_GCC?=arm-linux-gnueabi-gcc
-KERNEL_CROSS?=$(shell echo $(KERNEL_NDK_GCC) | sed s/gcc//)
+KERNEL_CROSS?=arm-linux-gnueabi-
 
 KERNELID=3.9.0-00054-g7b6edac-dirty
 DELETE_TEMP_FILES?=1
