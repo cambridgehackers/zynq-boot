@@ -13,9 +13,12 @@ else
 MD5PROG = md5sum
 DTC=./bin/dtc
 endif
+MKFS=/sbin/mkfs
 
-NDK_OBJDUMP=arm-none-linux-gnueabi-objdump
-NDK_GCC=arm-none-linux-gnueabi-gcc
+#NDK_OBJDUMP=arm-none-linux-gnueabi-objdump
+#NDK_GCC=arm-none-linux-gnueabi-gcc
+NDK_OBJDUMP=$(shell ndk-which objdump)
+NDK_GCC=$(shell ndk-which gcc)
 
 PREFIX=$(NDK_OBJDUMP:%-objdump=%-)
 KERNELID=3.9.0-00054-g7b6edac-dirty
@@ -216,7 +219,7 @@ sdcard-$(BOARD)/userdata.img:
 	mkdir -p sdcard-$(BOARD)
 	# make a 100MB empty filesystem
 	dd if=/dev/zero bs=1k count=102400 of=sdcard-$(BOARD)/userdata.img
-	mkfs -F -t ext4 sdcard-$(BOARD)/userdata.img
+	$(MKFS) -F -t ext4 sdcard-$(BOARD)/userdata.img
 endif
 
 sdcard-zynq.zip:

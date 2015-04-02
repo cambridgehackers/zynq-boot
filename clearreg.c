@@ -19,7 +19,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include <stdint.h>
+#include <stdint-gcc.h>
 /* This code initializes the parts of the ARM processor that were previously
  * initialized by u-boot (git://git.xilinx.com/u-boot-xlnx.git)
  * in arch/arm/cpu/armv7/zynq/cpu.c:lowlevel_init().
