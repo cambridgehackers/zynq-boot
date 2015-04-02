@@ -253,10 +253,10 @@ update-zynq-boot-filesystems:
 
 
 bin/dtc:
-	if [ -d linux-xlnx ]; then true; else git clone git://github.com/cambridgehackers/linux-xlnx.git; fi
+	if [ -d linux-xlnx ]; then true; else git clone git://github.com/cambridgehackers/linux-xlnx.git; (cd linux-xlnx; git checkout origin/connectal-2014.04 -b connectal-2014.04) fi
 	(cd linux-xlnx; \
 	git fetch; \
-	git checkout origin/connectal-2014.04 -b connectal-2014.04; \
+	git rebase origin/connectal-2014.04; \
 	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) xilinx_zynq_portal_defconfig; \
 	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) -j8 zImage; \
 	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) M=scripts/dtc; \
