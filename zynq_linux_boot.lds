@@ -6,6 +6,7 @@ SECTIONS
          }
          .textd (0x1000000): {
 	     d.tmp(.data);
+             . = . + 0x1000;
          }
          .textz (0x1008000): {
              start:
