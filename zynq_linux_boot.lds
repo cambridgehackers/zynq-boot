@@ -10,6 +10,7 @@ SECTIONS
          .textz (0x1008000): {
              start:
              clearreg.o(.text);
+             clearreg.o(.rodata);
              _start_linux:
              z.tmp(.data);
          }
