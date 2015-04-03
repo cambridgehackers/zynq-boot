@@ -54,26 +54,34 @@ zedboardtargets: $(zedboardtargets)
 $(zedboardtargets):
 	make BOARD=zedboard real.$(basename $@)
 
+RUNPARAMTEMP=$(subst :, ,$(RUNPARAM):5555)
+RUNIP=$(wordlist 1,1,$(RUNPARAMTEMP))
+RUNPORT=$(wordlist 2,2,$(RUNPARAMTEMP))
+
 zedboard-adb:
 	adb connect $(RUNPARAM)
-	adb -s $(RUNPARAM):5555 shell pwd || true
+	adb -s $(RUNIP):$(RUNPORT) shell pwd || true
 	adb connect $(RUNPARAM)
-	adb -s $(RUNPARAM):5555 root || true
+	adb -s $(RUNIP):$(RUNPORT) root || true
 	sleep 1
 	adb connect $(RUNPARAM)
-	adb -s $(RUNPARAM):5555 shell rm -rf /mnt/sdcard/$(KERNELID)
-	adb -s $(RUNPARAM):5555 shell mkdir /mnt/sdcard/$(KERNELID)
-	adb -s $(RUNPARAM):5555 push sdcard-zedboard/boot.bin   /mnt/sdcard
-	adb -s $(RUNPARAM):5555 push sdcard-zedboard/portalmem.ko    /mnt/sdcard
-	adb -s $(RUNPARAM):5555 push sdcard-zedboard/system.img    /mnt/sdcard
-	adb -s $(RUNPARAM):5555 push sdcard-zedboard/timelimit    /mnt/sdcard
-	adb -s $(RUNPARAM):5555 push sdcard-zedboard/webserver    /mnt/sdcard
-	adb -s $(RUNPARAM):5555 push sdcard-zedboard/userdata.img    /mnt/sdcard
-	adb -s $(RUNPARAM):5555 push sdcard-zedboard/zynqportal.ko  /mnt/sdcard
-	adb -s $(RUNPARAM):5555 shell sync
-	adb -s $(RUNPARAM):5555 shell sync
-	adb -s $(RUNPARAM):5555 reboot
+	adb -s $(RUNIP):$(RUNPORT) shell rm -rf /mnt/sdcard/$(KERNELID)
+	adb -s $(RUNIP):$(RUNPORT) shell mkdir /mnt/sdcard/$(KERNELID)
+	adb -s $(RUNIP):$(RUNPORT) push sdcard-zedboard/boot.bin   /mnt/sdcard
+	adb -s $(RUNIP):$(RUNPORT) push sdcard-zedboard/portalmem.ko    /mnt/sdcard
+	adb -s $(RUNIP):$(RUNPORT) push sdcard-zedboard/system.img    /mnt/sdcard
+	adb -s $(RUNIP):$(RUNPORT) push sdcard-zedboard/timelimit    /mnt/sdcard
+	adb -s $(RUNIP):$(RUNPORT) push sdcard-zedboard/webserver    /mnt/sdcard
+	adb -s $(RUNIP):$(RUNPORT) push sdcard-zedboard/userdata.img    /mnt/sdcard
+	adb -s $(RUNIP):$(RUNPORT) push sdcard-zedboard/zynqportal.ko  /mnt/sdcard
+	adb -s $(RUNIP):$(RUNPORT) shell sync
+	adb -s $(RUNIP):$(RUNPORT) shell sync
+	adb -s $(RUNIP):$(RUNPORT) reboot
 
+update-adb:
+	adb connect $(RUNPARAM)
+	adb -s $(RUNIP):$(RUNPORT) push boot.bin   /mnt/sdcard
+	adb -s $(RUNIP):$(RUNPORT) reboot
 
 #################################################################################################
 # zc702
