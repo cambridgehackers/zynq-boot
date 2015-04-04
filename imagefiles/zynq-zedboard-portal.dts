@@ -188,10 +188,6 @@
 
 			#address-cells = <1>;
 			#size-cells = <0>;
-			m24c02_eeprom@52 {
-				compatible = "zzzat,zzz24c02";
-				reg = <0x52>;
-			};
 		};
 
 		i2c1: i2c@e0005000 {
@@ -205,11 +201,6 @@
 
 			#address-cells = <1>;
 			#size-cells = <0>;
-			adv7511@39 {
-				compatible = "zzzzadv7511";
-				reg = <0x39>;
-				format = "disconnected";
-			};
 		};
 
 		sdhci@e0100000 {
