@@ -20,6 +20,7 @@
  */
 
 #include <stdint-gcc.h>
+#define XILINX_EP107		3378
 /* This code initializes the parts of the ARM processor that were previously
  * initialized by u-boot (git://git.xilinx.com/u-boot-xlnx.git)
  * in arch/arm/cpu/armv7/zynq/cpu.c:lowlevel_init().
@@ -65,7 +66,7 @@ void clearreg(void)
     Xil_Out32(XPSS_SYS_CTRL_BASEADDR + 0x4, SLCR_LOCK_MAGIC);   //slcr_lock
 
     debug_puts("Jump to linux\n\r");
-    _binary_imagefiles_zImage_start(0, 0xd32 /* XILINX_EP107 (Zynq) = 3378.*/, 0x1000000 /* address of devicetree data */);
+    _binary_imagefiles_zImage_start(0, XILINX_EP107, 0x1000000 /* address of devicetree data */);
 }
 static void Xil_Out32(uint32_t OutAddress, uint32_t Value)
 {

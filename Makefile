@@ -1,9 +1,8 @@
 #
 OS := $(shell uname)
 
-#NDKPATH=/scratch/android-ndk-r9d/
-# BOOTBIN_NDK_OBJDUMP=$(shell $(NDKPATH)ndk-which objdump)
-# NDK_GCC=$(shell $(NDKPATH)ndk-which gcc)
+LINUX_KERNEL_BRANCH=connectal-2014.04
+#LINUX_KERNEL_BRANCH=connectal-xilinx-v2014.4-trd
 
 ifeq ($(OS), Darwin)
 MD5PROG = md5
@@ -261,10 +260,12 @@ update-zynq-boot-filesystems:
 
 
 bin/dtc:
-	if [ -d linux-xlnx ]; then true; else git clone git://github.com/cambridgehackers/linux-xlnx.git; (cd linux-xlnx; git checkout origin/connectal-2014.04 -b connectal-2014.04) fi
-	(cd linux-xlnx; \
+	if [ -d linux-xlnx ]; then true; else git clone git://github.com/cambridgehackers/linux-xlnx.git; \
+	     (cd linux-xlnx; git checkout origin/$(LINUX_KERNEL_BRANCH) -b $(LINUX_KERNEL_BRANCH)) fi
+	(set -e; cd linux-xlnx; \
 	git fetch; \
-	git rebase origin/connectal-2014.04; \
+	git checkout $(LINUX_KERNEL_BRANCH); \
+	git rebase origin/$(LINUX_KERNEL_BRANCH); \
 	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) xilinx_zynq_portal_defconfig; \
 	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) -j8 zImage; \
 	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) M=scripts/dtc; \
