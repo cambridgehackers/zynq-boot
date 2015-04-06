@@ -303,5 +303,15 @@
 			reg = <0x6e400000 0x10000>;
 			device-name = "connectal";
 		};
+		connectalsdhci@e0101000 {
+			compatible = "connectalsdhci";
+			reg = <0xe0101000 0x1000>;
+			xlnx,has-cd = <0x0>;
+			interrupts = <0 47 4>;
+			interrupt-parent = <&gic>;
+			clock-frequency = <11111000>;
+		};
+
+
 	};
 };
