@@ -82,6 +82,21 @@ update-adb:
 	adb -s $(RUNIP):$(RUNPORT) push boot.bin   /mnt/sdcard
 	adb -s $(RUNIP):$(RUNPORT) reboot
 
+zbb-adb:
+	make zImage
+	make bootbin.zedboard
+	adb connect $(RUNPARAM)
+	adb -s $(RUNPARAM):5555 shell pwd || true
+	adb connect $(RUNPARAM)
+	adb -s $(RUNPARAM):5555 root || true
+	sleep 1
+	adb connect $(RUNPARAM)
+	adb -s $(RUNPARAM):5555 push boot.bin   /mnt/sdcard
+	adb -s $(RUNPARAM):5555 shell sync
+	adb -s $(RUNPARAM):5555 shell sync
+	adb -s $(RUNPARAM):5555 reboot
+
+
 #################################################################################################
 # zc702
 zc702targets = $(addsuffix .zc702, $(targetnames))
