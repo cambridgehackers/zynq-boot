@@ -2,7 +2,9 @@
 OS := $(shell uname)
 
 LINUX_KERNEL_BRANCH=connectal-2014.04
+DTS_FILENAME=imagefiles/zynq-$(BOARD)-portal.dts
 #LINUX_KERNEL_BRANCH=connectal-xilinx-v2014.4-trd
+#DTS_FILENAME=dts/zynq-$(BOARD).dts
 
 ifeq ($(OS), Darwin)
 MD5PROG = md5
@@ -150,8 +152,8 @@ endif
 # daffodil's zedboard uses this macaddress: 00:e0:0c:00:98:03 
 
 # if [ -f $(DTC) ]; then echo $(DTC); else make $(DTC); fi
-INVOKE_DTC = $(DTC) -I dts -O dtb -o dtb.tmp imagefiles/zynq-$(BOARD)-portal.dts
-dtb.tmp: imagefiles/zynq-$(BOARD)-portal.dts
+INVOKE_DTC = $(DTC) -I dts -O dtb -o dtb.tmp $(DTS_FILENAME)
+dtb.tmp: $(DTS_FILENAME)
 	$(INVOKE_DTC) || make $(DTC); $(INVOKE_DTC)
 
 zcomposite.elf: ramdisk dtb.tmp
