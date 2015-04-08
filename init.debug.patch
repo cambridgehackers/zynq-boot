@@ -1,0 +1,26 @@
+diff --git a/init/init.c b/init/init.c
+old mode 100755
+new mode 100644
+index 4f57144..e9fabc8
+--- a/init/init.c
++++ b/init/init.c
+@@ -859,6 +859,7 @@ int main(int argc, char **argv)
+     int signal_fd_init = 0;
+     int keychord_fd_init = 0;
+     bool is_charger = false;
++    int debugfd;
+ 
+     if (!strcmp(basename(argv[0]), "ueventd"))
+         return ueventd_main(argc, argv);
+@@ -890,7 +891,10 @@ int main(int argc, char **argv)
+          * Now that tmpfs is mounted on /dev, we can actually
+          * talk to the outside world.
+          */
+-    open_devnull_stdio();
++    if ((debugfd = open("/init.debug", O_RDONLY)) != -1)
++        close(debugfd);
++    else
++        open_devnull_stdio();
+     klog_init();
+     property_init();
+ 

@@ -189,6 +189,12 @@ To add a new board:
 
     3) make sure that bootargs in the dts file is updated to reflect the boot ramdisk and /dev/fpgaXXX devices
 
+To debug the /init process (and see the commands it is executing
+================================================================
+     1) touch data/init.debug  (create the empty file init.debug in the zynq-boot/data directory)
+     2) make bootbin.xxx       (where xxx is your target machine, e.g., zedboard)
+This creates a file /init.debug on the target device.  When the Android system/core/init/init.c command runs, if this file exists stdio devices are not closed.
+
 Sources of xxxx_fsbl.elf files
 ==============================
 
