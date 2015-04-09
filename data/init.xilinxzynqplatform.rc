@@ -7,7 +7,7 @@ on early-init
     mount ext4 loop@/mnt/sdcard/system.img /system rw wait
     mount ext4 loop@/mnt/sdcard/userdata.img /data rw nosuid nodev wait
     chown 0 /fpgajtag
-    chgrp 0 /fpgajtag
+    #doesn't exist chgrp 0 /fpgajtag
     chmod 4755 /fpgajtag
     mount tmpfs tmpfs /mnt/sdcard/tmp
     class_start zynq
@@ -18,7 +18,7 @@ service webserver /mnt/sdcard/webserver
     group root
 
 service zynqmodules /zynqmodules.sh
-    once
+    oneshot
     class zynq
     user root
     group root
