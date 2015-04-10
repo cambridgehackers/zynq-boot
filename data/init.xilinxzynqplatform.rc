@@ -10,6 +10,8 @@ on early-init
     #doesn't exist chgrp 0 /fpgajtag
     chmod 4755 /fpgajtag
     mount tmpfs tmpfs /mnt/sdcard/tmp
+    mkdir /mnt/sdcard1 0000 system system
+    mount -t debugfs none /sys/kernel/debug/
     class_start zynq
 
 service webserver /mnt/sdcard/webserver

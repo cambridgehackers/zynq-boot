@@ -35,6 +35,10 @@
 	};
 };
 
+&clkc {
+	ps-clk-frequency = <50000000>;
+};
+
 &qspi {
 	status = "okay";
 	is-dual = <0>;
@@ -87,10 +91,6 @@
 };
 
 &sdhci0 {
-	status = "okay";
-};
-
-&sdhci1 {
 	status = "okay";
 };
 

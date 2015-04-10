@@ -127,7 +127,7 @@ zcomposite.elf: ramdisk dtb.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm imagefiles/zImage z.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm ramdisk.image.gz r.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm dtb.tmp d.tmp
-	$(PREFIX)gcc -c -DBOARD_$(BOARD) -fno-unwind-tables clearreg.c
+	$(PREFIX)gcc -Wall -Werror -c -DBOARD_$(BOARD) -fno-unwind-tables clearreg.c
 	$(PREFIX)ld -e 0x1008000 -z max-page-size=0x8000 -o zcomposite.elf --script zynq_linux_boot.lds r.tmp d.tmp clearreg.o z.tmp
 ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f z.tmp r.tmp d.tmp clearreg.o c1.tmp clearreg.o ramdisk.image.gz dtb.tmp
@@ -155,7 +155,7 @@ dumpbootbin: dumpbootbin.c Makefile
 	gcc -g -o dumpbootbin dumpbootbin.c
 
 reserved_for_interrupts.h: reserved_for_interrupts.S
-	$(PREFIX)gcc -c reserved_for_interrupts.S
+	$(PREFIX)gcc -Wall -Werror -c reserved_for_interrupts.S
 	$(PREFIX)ld -Ttext 0 -e 0 -o i.tmp reserved_for_interrupts.o
 	$(PREFIX)objcopy -O binary -I elf32-little i.tmp reserved_for_interrupts.tmp
 	./bin2header.py reserved_for_interrupts.tmp >reserved_for_interrupts.h
