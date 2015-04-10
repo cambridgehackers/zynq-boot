@@ -46,13 +46,13 @@ def rmfile(fname):
         pass
 
 if __name__ == '__main__':
-    # # delete files to force rebuilds
-    # rmfile('zImage')
-    # rmfile('boot.bin')
+    # delete files to force rebuilds
+    rmfile('zImage')
+    rmfile('boot.bin')
 
-    # # rebuild zImage and boot.bin
-    # call(['make', 'zImage'])
-    # call(['make', 'bootbin.zedboard'])
+    # rebuild zImage and boot.bin
+    call(['make', 'zImage'])
+    call(['make', 'bootbin.zedboard'])
 
     # connect to the board
     device_serial = ipaddr
@@ -76,6 +76,6 @@ if __name__ == '__main__':
 
     print 'Sending files to the zedboard'
     connection.Push('boot.bin', '/mnt/sdcard/boot.bin')
-    print connection.Shell('ls /mnt/sdcard')
+    connection.Reboot()
 
 
