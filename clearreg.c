@@ -66,7 +66,7 @@ static const struct {
     {PINOFF(14), XSLCR_MIO_PIN_SDIO_ENABLE}, 
     {PINOFF(15), XSLCR_MIO_PIN_SDIO_ENABLE}, 
 #endif
-    {}}; 
+    {0,0}}; 
 
 void _binary_imagefiles_zImage_start(int, int, int);
 void clearreg(void)
