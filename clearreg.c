@@ -39,13 +39,39 @@
 #define XUARTPS_SR_TXFULL         0x00000010 /**< TX FIFO full */
 #define XUARTPS_FIFO_OFFSET       0x30       /**< FIFO [7:0] */
 
+// SLCR
+#define XSLCR_MIO_PIN_00_OFFSET    0x700 /* MIO PIN0 control register */
+#define XSLCR_MIO_L0_SHIFT             1
+#define XSLCR_MIO_L1_SHIFT             2
+#define XSLCR_MIO_L2_SHIFT             3
+#define XSLCR_MIO_L3_SHIFT             5
+#define XSLCR_MIO_LMASK             0xFE
+#define XSLCR_MIO_PIN_XX_TRI_ENABLE    1
+#define XSLCR_MIO_PIN_GPIO_ENABLE   (0x00 << XSLCR_MIO_L3_SHIFT)
+#define XSLCR_MIO_PIN_SDIO_ENABLE   (0x04 << XSLCR_MIO_L3_SHIFT)
+#define PINOFF(PIN) (XPSS_SYS_CTRL_BASEADDR + XSLCR_MIO_PIN_00_OFFSET + (PIN) * 4)
+
 static void Xil_Out32(uint32_t OutAddress, uint32_t Value);
 static uint32_t Xil_In32(uint32_t Addr);
 static void debug_puts(const char *ptr);
+static const struct {
+    uint32_t pinaddr;
+    uint32_t enable;
+} pindef[] = {
+#ifdef BOARD_zedboard
+    {PINOFF(10), XSLCR_MIO_PIN_SDIO_ENABLE}, 
+    {PINOFF(11), XSLCR_MIO_PIN_SDIO_ENABLE}, 
+    {PINOFF(12), XSLCR_MIO_PIN_SDIO_ENABLE}, 
+    {PINOFF(13), XSLCR_MIO_PIN_SDIO_ENABLE}, 
+    {PINOFF(14), XSLCR_MIO_PIN_SDIO_ENABLE}, 
+    {PINOFF(15), XSLCR_MIO_PIN_SDIO_ENABLE}, 
+#endif
+    {0,0}}; 
 
 void _binary_imagefiles_zImage_start(int, int, int);
 void clearreg(void)
 {
+    uint32_t pinaddr, ind = 0;
     debug_puts("Start clearreg\n\r");
     Xil_Out32(XPSS_SYS_CTRL_BASEADDR + 0x8, SLCR_UNLOCK_MAGIC); //slcr_unlock
     /* remap DDR to zero, FILTERSTART */
@@ -56,13 +82,20 @@ void clearreg(void)
     /* OCM_CFG, Mask out the ROM, map ram into upper addresses */
     Xil_Out32(XPSS_SYS_CTRL_BASEADDR + 0x910, 0x1F);            //ocm_cfg
     /* FPGA_RST_CTRL, clear resets on AXI fabric ports */
-    Xil_Out32(XPSS_SYS_CTRL_BASEADDR + 0x240, 0x0);             //fpga_rst_ctrl
+    Xil_Out32(XPSS_SYS_CTRL_BASEADDR + 0x240, 0);             //fpga_rst_ctrl
     /* TZ_DDR_RAM, Set DDR trust zone non-secure */
     Xil_Out32(XPSS_SYS_CTRL_BASEADDR + 0x430, 0xFFFFFFFF);      //trust_zone
     /* Set urgent bits with register */
-    Xil_Out32(XPSS_SYS_CTRL_BASEADDR + 0x61c, 0x0);             //ddr_urgent_sel
+    Xil_Out32(XPSS_SYS_CTRL_BASEADDR + 0x61c, 0);             //ddr_urgent_sel
     /* Urgent write, ports S2/S3 */
     Xil_Out32(XPSS_SYS_CTRL_BASEADDR + 0x600, 0xC);             //ddr_urgent
+    while ((pinaddr = pindef[ind].pinaddr)) {
+        /* release pin set tri-state */
+        Xil_Out32(pinaddr, (Xil_In32(pinaddr) & ~XSLCR_MIO_LMASK) | XSLCR_MIO_PIN_XX_TRI_ENABLE);
+        /* assign pin to this peripheral */
+        Xil_Out32(pinaddr, pindef[ind].enable);
+        ind++;
+    }
     Xil_Out32(XPSS_SYS_CTRL_BASEADDR + 0x4, SLCR_LOCK_MAGIC);   //slcr_lock
 
     debug_puts("Jump to linux\n\r");

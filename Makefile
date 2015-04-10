@@ -5,6 +5,7 @@ LINUX_KERNEL_BRANCH=connectal-2014.04
 DTS_FILENAME=imagefiles/zynq-$(BOARD)-portal.dts
 #LINUX_KERNEL_BRANCH=connectal-xilinx-v2014.4-trd
 #DTS_FILENAME=dts/zynq-$(BOARD).dts
+INITRD_SIZE=512
 
 ifeq ($(OS), Darwin)
 MD5PROG = md5
@@ -127,7 +128,7 @@ zcomposite.elf: ramdisk dtb.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm imagefiles/zImage z.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm ramdisk.image.gz r.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm dtb.tmp d.tmp
-	$(PREFIX)gcc -c -DBOARD_$(BOARD) -fno-unwind-tables clearreg.c
+	$(PREFIX)gcc -Wall -Werror -c -DBOARD_$(BOARD) -fno-unwind-tables clearreg.c
 	$(PREFIX)ld -e 0x1008000 -z max-page-size=0x8000 -o zcomposite.elf --script zynq_linux_boot.lds r.tmp d.tmp clearreg.o z.tmp
 ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f z.tmp r.tmp d.tmp clearreg.o c1.tmp clearreg.o ramdisk.image.gz dtb.tmp
@@ -140,7 +141,7 @@ ramdisk: canoncpio
 	chmod 644 data/*.rc data/*.prop
 	cd data; (find . -name unused -o -print | sort | cpio -H newc -o >../ramdisk.image.temp1)
 	./canoncpio < ramdisk.image.temp1 | gzip -9 -n >ramdisk.image.temp
-	cat ramdisk.image.temp /dev/zero | dd of=ramdisk.image.gz count=256 ibs=1024
+	cat ramdisk.image.temp /dev/zero | dd of=ramdisk.image.gz count=$(INITRD_SIZE) ibs=1024
 ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f ramdisk.image.temp ramdisk.image.temp1
 endif
@@ -155,7 +156,7 @@ dumpbootbin: dumpbootbin.c Makefile
 	gcc -g -o dumpbootbin dumpbootbin.c
 
 reserved_for_interrupts.h: reserved_for_interrupts.S
-	$(PREFIX)gcc -c reserved_for_interrupts.S
+	$(PREFIX)gcc -Wall -Werror -c reserved_for_interrupts.S
 	$(PREFIX)ld -Ttext 0 -e 0 -o i.tmp reserved_for_interrupts.o
 	$(PREFIX)objcopy -O binary -I elf32-little i.tmp reserved_for_interrupts.tmp
 	./bin2header.py reserved_for_interrupts.tmp >reserved_for_interrupts.h

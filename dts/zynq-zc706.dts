@@ -31,7 +31,7 @@
 	};
 
 	chosen {
-		bootargs = "console=ttyPS0,115200 initrd=0x00800000,256K noinitrd init=/init root=/dev/ram rw ip=:::::eth0:dhcp earlyprintk";
+		bootargs = "console=ttyPS0,115200 initrd=0x00800000,512K noinitrd init=/init root=/dev/ram rw ip=:::::eth0:dhcp earlyprintk";
 		linux,stdout-path = "/amba/serial@e0001000";
 	};
 };
