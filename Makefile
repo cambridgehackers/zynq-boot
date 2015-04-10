@@ -5,6 +5,7 @@ LINUX_KERNEL_BRANCH=connectal-2014.04
 DTS_FILENAME=imagefiles/zynq-$(BOARD)-portal.dts
 #LINUX_KERNEL_BRANCH=connectal-xilinx-v2014.4-trd
 #DTS_FILENAME=dts/zynq-$(BOARD).dts
+INITRD_SIZE=512
 
 ifeq ($(OS), Darwin)
 MD5PROG = md5
@@ -140,7 +141,7 @@ ramdisk: canoncpio
 	chmod 644 data/*.rc data/*.prop
 	cd data; (find . -name unused -o -print | sort | cpio -H newc -o >../ramdisk.image.temp1)
 	./canoncpio < ramdisk.image.temp1 | gzip -9 -n >ramdisk.image.temp
-	cat ramdisk.image.temp /dev/zero | dd of=ramdisk.image.gz count=256 ibs=1024
+	cat ramdisk.image.temp /dev/zero | dd of=ramdisk.image.gz count=$(INITRD_SIZE) ibs=1024
 ifeq ($(DELETE_TEMP_FILES),1)
 	rm -f ramdisk.image.temp ramdisk.image.temp1
 endif
