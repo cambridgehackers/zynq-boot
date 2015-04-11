@@ -284,6 +284,7 @@
 			interrupt-parent = <&intc>;
 			interrupts = <0 47 4>;
 			reg = <0xe0101000 0x1000>;
+			clock-frequency = <10000000>;
 		};
 
 		slcr: slcr@f8000000 {
