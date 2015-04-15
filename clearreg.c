@@ -58,7 +58,7 @@ static const struct {
     uint32_t pinaddr;
     uint32_t enable;
 } pindef[] = {
-#ifdef BOARD_zedboard
+#if 0 //def BOARD_zedboard
     {PINOFF(10), XSLCR_MIO_PIN_SDIO_ENABLE}, 
     {PINOFF(11), XSLCR_MIO_PIN_SDIO_ENABLE}, 
     {PINOFF(12), XSLCR_MIO_PIN_SDIO_ENABLE}, 

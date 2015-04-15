@@ -306,12 +306,11 @@
 		connectalsdhci@e0101000 {
 			compatible = "connectalsdhci";
 			reg = <0xe0101000 0x1000>;
-			xlnx,has-cd = <0x0>;
+			xlnx,has-cd = <0x1>;
 			interrupts = <0 47 4>;
 			interrupt-parent = <&gic>;
-			clock-frequency = <11111000>;
+			clock-frequency = <33333000>;
+			high-speed-enable = <0x0>;
 		};
-
-
 	};
 };

@@ -26,6 +26,7 @@ import os
 import subprocess
 import sys
 from subprocess import call
+import argparse
 
 sys.path.append('../connectal/scripts')
 
@@ -45,7 +46,13 @@ def rmfile(fname):
     except OSError as e:
         pass
 
+argparser = argparse.ArgumentParser("Run Connectal apps on Android Zynq boards.")
+argparser.add_argument('--ko', action='store_true')
+
 if __name__ == '__main__':
+
+    options = argparser.parse_args()
+
     # delete files to force rebuilds
     rmfile('zImage')
     rmfile('boot.bin')
@@ -75,7 +82,11 @@ if __name__ == '__main__':
             pass
 
     print 'Sending files to the zedboard'
-    connection.Push('boot.bin', '/mnt/sdcard/boot.bin')
-    connection.Reboot()
+    if options.ko:
+        connection.Push('linux-xlnx/drivers/net/wireless/ath/ath6kl/ath6kl_sdio.ko', '/mnt/sdcard/ath6kl_sdio.ko')
+    else:
+        connection.Push('boot.bin', '/mnt/sdcard/boot.bin')
+        connection.Reboot()
+
 
 

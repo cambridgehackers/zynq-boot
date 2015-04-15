@@ -252,8 +252,9 @@ bin/dtc:
 	git fetch; \
 	git checkout $(LINUX_KERNEL_BRANCH); \
 	git rebase origin/$(LINUX_KERNEL_BRANCH); \
-	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) xilinx_zynq_portal_defconfig; \
+	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) xilinx_zynq_portal_atheros_sdio_defconfig; \
 	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) -j8 zImage; \
+	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) -j8 modules; \
 	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) M=scripts/dtc; \
 	cp -fv scripts/dtc/dtc ../bin/dtc)
 
