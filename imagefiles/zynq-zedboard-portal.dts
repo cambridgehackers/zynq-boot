@@ -309,7 +309,7 @@
 			xlnx,has-cd = <0x1>;
 			interrupts = <0 47 4>;
 			interrupt-parent = <&gic>;
-			clock-frequency = <33333000>;
+			clock-frequency = <16666666>;
 			high-speed-enable = <0x0>;
 		};
 	};
