@@ -49,7 +49,10 @@
 #define XSLCR_MIO_PIN_XX_TRI_ENABLE    1
 #define XSLCR_MIO_PIN_GPIO_ENABLE   (0x00 << XSLCR_MIO_L3_SHIFT)
 #define XSLCR_MIO_PIN_SDIO_ENABLE   (0x04 << XSLCR_MIO_L3_SHIFT)
+
 #define PINOFF(PIN) (XPSS_SYS_CTRL_BASEADDR + XSLCR_MIO_PIN_00_OFFSET + (PIN) * 4)
+// #define EMIO_SDIO1
+
 
 static void Xil_Out32(uint32_t OutAddress, uint32_t Value);
 static uint32_t Xil_In32(uint32_t Addr);
@@ -57,8 +60,8 @@ static void debug_puts(const char *ptr);
 static const struct {
     uint32_t pinaddr;
     uint32_t enable;
-} pindef[] = {
-#if 0 //def BOARD_zedboard
+} sdio1_pindef[] = {
+#ifdef BOARD_zedboard
     {PINOFF(10), XSLCR_MIO_PIN_SDIO_ENABLE}, 
     {PINOFF(11), XSLCR_MIO_PIN_SDIO_ENABLE}, 
     {PINOFF(12), XSLCR_MIO_PIN_SDIO_ENABLE}, 
@@ -66,7 +69,7 @@ static const struct {
     {PINOFF(14), XSLCR_MIO_PIN_SDIO_ENABLE}, 
     {PINOFF(15), XSLCR_MIO_PIN_SDIO_ENABLE}, 
 #endif
-    {0,0}}; 
+    {0,0}};
 
 void _binary_imagefiles_zImage_start(int, int, int);
 void clearreg(void)
@@ -89,15 +92,16 @@ void clearreg(void)
     Xil_Out32(XPSS_SYS_CTRL_BASEADDR + 0x61c, 0);             //ddr_urgent_sel
     /* Urgent write, ports S2/S3 */
     Xil_Out32(XPSS_SYS_CTRL_BASEADDR + 0x600, 0xC);             //ddr_urgent
-    while ((pinaddr = pindef[ind].pinaddr)) {
+    while ((pinaddr = sdio1_pindef[ind].pinaddr)) {
+#ifndef EMIO_SDIO1
         /* release pin set tri-state */
         Xil_Out32(pinaddr, (Xil_In32(pinaddr) & ~XSLCR_MIO_LMASK) | XSLCR_MIO_PIN_XX_TRI_ENABLE);
         /* assign pin to this peripheral */
-        Xil_Out32(pinaddr, pindef[ind].enable);
+        Xil_Out32(pinaddr, sdio1_pindef[ind].enable);
+#endif
         ind++;
     }
     Xil_Out32(XPSS_SYS_CTRL_BASEADDR + 0x4, SLCR_LOCK_MAGIC);   //slcr_lock
-
     debug_puts("Jump to linux\n\r");
     _binary_imagefiles_zImage_start(0, XILINX_EP107, 0x1000000 /* address of devicetree data */);
 }
