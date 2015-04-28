@@ -312,12 +312,12 @@
 			clock-frequency = <16666666>;
 			high-speed-enable = <0x0>;
 		};
-		spi0: spi@e0006000 {
-		       compatible = "xlnx,ps7-spi-1.00.a";
+		connectalspi: connectalspi@e0006000 {
+		       compatible = "connectalspi";
 		       reg = <0xE0006000 0x1000>;
                        interrupts = <0 26 0>;
                        interrupt-parent = <&gic>;
-                       speed-hz = <25000000>;
+                       speed-hz = <16666666>;
                        bus-num = <2>;
                        num-chip-select = <4>;
                        spidev@0 {
