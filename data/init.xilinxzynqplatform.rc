@@ -11,16 +11,18 @@ on early-init
     chmod 4755 /fpgajtag
     mount tmpfs tmpfs /mnt/sdcard/tmp
     mkdir /mnt/sdcard1 0000 system system
-    mount -t debugfs none /sys/kernel/debug/
+    mount debugfs debugfs /sys/kernel/debug
     class_start zynq
 
 service webserver /mnt/sdcard/webserver
     class zynq
     user root
     group root
+    setenv PATH /sbin:/vendor/bin:/system/sbin:/system/bin:/system/xbin
 
 service zynqmodules /zynqmodules.sh
     oneshot
     class zynq
     user root
     group root
+    setenv PATH /sbin:/system/bin:/system/sbin:/system/xbin
