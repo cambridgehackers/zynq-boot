@@ -317,7 +317,7 @@
 		       reg = <0xE0006000 0x1000>;
                        interrupts = <0 26 0>;
                        interrupt-parent = <&gic>;
-                       speed-hz = <16666666>;
+                       speed-hz = <25000000>;
                        bus-num = <2>;
                        num-chip-select = <4>;
                        spidev@0 {
