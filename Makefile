@@ -1,6 +1,7 @@
 #
 OS := $(shell uname)
 
+CONNECTALDIR ?= ../connectal
 LINUX_KERNEL_BRANCH=connectal-2014.04
 DTS_FILENAME=imagefiles/zynq-$(BOARD)-portal.dts
 #LINUX_KERNEL_BRANCH=connectal-xilinx-v2014.4-trd
@@ -64,6 +65,8 @@ update-adb:
 	adb connect $(RUNPARAM)
 	adb -s $(RUNIP):$(RUNPORT) push boot.bin   /mnt/sdcard
 	adb -s $(RUNIP):$(RUNPORT) reboot
+	#$(CONNECTALDIR)/scripts/cadb $(RUNPARAM) push boot.bin /mnt/sdcard
+	#$(CONNECTALDIR)/scripts/cadb $(RUNPARAM) reboot
 
 #################################################################################################
 # zc702
