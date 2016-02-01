@@ -50,5 +50,6 @@ for cbyte in dtb_header:
 ind = ind + 1   # last byte in dtb header varies with machine
 print 'current', [p.encode('hex') for p in inbuf[ind: ind + 6]]
 inbuf = inbuf[:ind+4] + chr(int(sys.argv[2], 0)) + inbuf[ind+5:]
+print 'updated', [p.encode('hex') for p in inbuf[ind: ind + 6]]
 open(sys.argv[1], 'w+b').write(inbuf)
 sys.exit(0)
