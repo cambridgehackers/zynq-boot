@@ -2,10 +2,16 @@
 OS := $(shell uname)
 
 CONNECTALDIR ?= ../connectal
+BRANCH=old
+ifeq ($(BRANCH),old)
 LINUX_KERNEL_BRANCH=connectal-2014.04
+DEFCONFIG=xilinx_zynq_portal_atheros_sdio_defconfig
 DTS_FILENAME=imagefiles/zynq-$(BOARD)-portal.dts
-#LINUX_KERNEL_BRANCH=connectal-xilinx-v2014.4-trd
-#DTS_FILENAME=dts/zynq-$(BOARD).dts
+else
+LINUX_KERNEL_BRANCH=connectal-xilinx-v2014.4-trd
+DEFCONFIG=xilinx_zynq_portal_defconfig
+DTS_FILENAME=dts/zynq-$(BOARD).dts
+endif
 INITRD_SIZE=512
 
 ifeq ($(OS), Darwin)
@@ -254,8 +260,8 @@ bin/dtc:
 	(set -e; cd linux-xlnx; \
 	git fetch; \
 	git checkout $(LINUX_KERNEL_BRANCH); \
-	git rebase origin/$(LINUX_KERNEL_BRANCH); \
-	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) xilinx_zynq_portal_atheros_sdio_defconfig; \
+	echo git rebase origin/$(LINUX_KERNEL_BRANCH); \
+	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) $(DEFCONFIG); \
 	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) -j8 zImage; \
 	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) -j8 modules; \
 	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) M=scripts/dtc; \
