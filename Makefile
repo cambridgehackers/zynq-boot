@@ -6,10 +6,12 @@ BRANCH=old
 ifeq ($(BRANCH),old)
 LINUX_KERNEL_BRANCH=connectal-2014.04
 DEFCONFIG=xilinx_zynq_portal_atheros_sdio_defconfig
+KERNELID=3.9.0-00055-g6f85fcc
 DTS_FILENAME=imagefiles/zynq-$(BOARD)-portal.dts
 else
 LINUX_KERNEL_BRANCH=connectal-xilinx-v2014.4-trd
 DEFCONFIG=xilinx_zynq_portal_defconfig
+KERNELID=3.17.0-00013-g1a80225
 DTS_FILENAME=dts/zynq-$(BOARD).dts
 endif
 INITRD_SIZE=512
@@ -30,7 +32,6 @@ PREFIX?=$(BOOTBIN_NDK_OBJDUMP:%-objdump=%-)
 
 KERNEL_CROSS?=arm-linux-gnueabi-
 
-KERNELID=3.9.0-00055-g6f85fcc
 DELETE_TEMP_FILES?=1
 
 targetnames = bootbin sdcard all
@@ -178,8 +179,8 @@ zynqdrivers: zImage zynqdrivers.real
 zynqdrivers.real:
 	[ -d connectal ] || git clone git://github.com/cambridgehackers/connectal
 	(set -e; cd connectal; git pull origin master; \
-	    make DEFCONFIG=$(DEFCONFIG) zynqdrivers-clean; \
-	    make DEFCONFIG=$(DEFCONFIG) zynqdrivers )
+		DEFCONFIG=$(DEFCONFIG) make zynqdrivers-clean; \
+		DEFCONFIG=$(DEFCONFIG) make zynqdrivers )
 	cp connectal/drivers/zynqportal/zynqportal.ko imagefiles
 	cp connectal/drivers/portalmem/portalmem.ko imagefiles
 
