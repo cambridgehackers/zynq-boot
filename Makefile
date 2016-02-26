@@ -178,8 +178,8 @@ zynqdrivers: zImage zynqdrivers.real
 zynqdrivers.real:
 	[ -d connectal ] || git clone git://github.com/cambridgehackers/connectal
 	(set -e; cd connectal; git pull origin master; \
-	    make zynqdrivers-clean; \
-	    make zynqdrivers )
+	    make DEFCONFIG=$(DEFCONFIG) zynqdrivers-clean; \
+	    make DEFCONFIG=$(DEFCONFIG) zynqdrivers )
 	cp connectal/drivers/zynqportal/zynqportal.ko imagefiles
 	cp connectal/drivers/portalmem/portalmem.ko imagefiles
 
