@@ -407,6 +407,8 @@
 			interrupt-parent = <&intc>;
 			reg = <0x6e400000 0x10000>;
 			device-name = "connectal";
+			clocks = <&clkc 15>, <&clkc 16>, <&clkc 17>, <&clkc 18>;
+			clock-names = "fclk0", "fclk1", "fclk2", "fclk3";
 		};
 	};
 };
