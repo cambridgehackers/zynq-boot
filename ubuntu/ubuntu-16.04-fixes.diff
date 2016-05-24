@@ -1,0 +1,143 @@
+diff -urN bar/etc/apt/sources.list foo/etc/apt/sources.list
+--- bar/etc/apt/sources.list	2016-04-20 18:24:52.020826754 -0400
++++ foo/etc/apt/sources.list	2016-05-24 08:35:36.639920203 -0400
+@@ -1,3 +1,57 @@
+-deb http://ports.ubuntu.com/ubuntu-ports/ xenial main restricted universe multiverse
+-deb http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main restricted universe multiverse
+-deb http://ports.ubuntu.com/ubuntu-ports/ xenial-security main restricted universe multiverse
++## Note, this file is written by cloud-init on first boot of an instance
++## modifications made here will not survive a re-bundle.
++## if you wish to make changes you can:
++## a.) add 'apt_preserve_sources_list: true' to /etc/cloud/cloud.cfg
++##     or do the same in user-data
++## b.) add sources in /etc/apt/sources.list.d
++## c.) make changes to template file /etc/cloud/templates/sources.list.tmpl
++
++# See http://help.ubuntu.com/community/UpgradeNotes for how to upgrade to
++# newer versions of the distribution.
++deb http://ports.ubuntu.com/ubuntu-ports xenial main restricted
++deb-src http://ports.ubuntu.com/ubuntu-ports xenial main restricted
++
++## Major bug fix updates produced after the final release of the
++## distribution.
++deb http://ports.ubuntu.com/ubuntu-ports xenial-updates main restricted
++deb-src http://ports.ubuntu.com/ubuntu-ports xenial-updates main restricted
++
++## N.B. software from this repository is ENTIRELY UNSUPPORTED by the Ubuntu
++## team. Also, please note that software in universe WILL NOT receive any
++## review or updates from the Ubuntu security team.
++deb http://ports.ubuntu.com/ubuntu-ports xenial universe
++deb-src http://ports.ubuntu.com/ubuntu-ports xenial universe
++deb http://ports.ubuntu.com/ubuntu-ports xenial-updates universe
++deb-src http://ports.ubuntu.com/ubuntu-ports xenial-updates universe
++
++## N.B. software from this repository is ENTIRELY UNSUPPORTED by the Ubuntu 
++## team, and may not be under a free licence. Please satisfy yourself as to 
++## your rights to use the software. Also, please note that software in 
++## multiverse WILL NOT receive any review or updates from the Ubuntu
++## security team.
++deb http://ports.ubuntu.com/ubuntu-ports xenial multiverse
++deb-src http://ports.ubuntu.com/ubuntu-ports xenial multiverse
++deb http://ports.ubuntu.com/ubuntu-ports xenial-updates multiverse
++deb-src http://ports.ubuntu.com/ubuntu-ports xenial-updates multiverse
++
++## N.B. software from this repository may not have been tested as
++## extensively as that contained in the main release, although it includes
++## newer versions of some applications which may provide useful features.
++## Also, please note that software in backports WILL NOT receive any review
++## or updates from the Ubuntu security team.
++deb http://ports.ubuntu.com/ubuntu-ports xenial-backports main restricted universe multiverse
++deb-src http://ports.ubuntu.com/ubuntu-ports xenial-backports main restricted universe multiverse
++
++deb http://ports.ubuntu.com/ubuntu-ports xenial-security main restricted
++deb-src http://ports.ubuntu.com/ubuntu-ports xenial-security main restricted
++deb http://ports.ubuntu.com/ubuntu-ports xenial-security universe
++deb-src http://ports.ubuntu.com/ubuntu-ports xenial-security universe
++deb http://ports.ubuntu.com/ubuntu-ports xenial-security multiverse
++deb-src http://ports.ubuntu.com/ubuntu-ports xenial-security multiverse
++
++## Uncomment the following two lines to add software from Canonical's
++## 'partner' repository.
++## This software is not part of Ubuntu, but is offered by Canonical and the
++## respective vendors as a service to Ubuntu users.
++# deb http://archive.canonical.com/ubuntu xenial partner
++# deb-src http://archive.canonical.com/ubuntu xenial partner
+diff -urN bar/etc/fstab foo/etc/fstab
+--- bar/etc/fstab	2016-04-20 18:23:46.753137627 -0400
++++ foo/etc/fstab	2016-05-24 08:32:03.082644566 -0400
+@@ -1,2 +1,2 @@
+ LABEL=cloudimg-rootfs	/	 ext4	defaults	0 0
+-LABEL=system-boot       /boot/firmware  vfat    defaults        0       1
++LABEL=system-boot       /boot/firmware  vfat    defaults        0       0
+diff -urN bar/etc/network/interfaces.d/50-cloud-init.cfg foo/etc/network/interfaces.d/50-cloud-init.cfg
+--- bar/etc/network/interfaces.d/50-cloud-init.cfg	1969-12-31 19:00:00.000000000 -0500
++++ foo/etc/network/interfaces.d/50-cloud-init.cfg	2016-05-24 08:32:48.582708128 -0400
+@@ -0,0 +1,2 @@
++auto lo
++iface lo inet loopback
+diff -urN bar/etc/network/interfaces.d/60-eth0.cfg foo/etc/network/interfaces.d/60-eth0.cfg
+--- bar/etc/network/interfaces.d/60-eth0.cfg	1969-12-31 19:00:00.000000000 -0500
++++ foo/etc/network/interfaces.d/60-eth0.cfg	2016-05-23 16:13:49.530536419 -0400
+@@ -0,0 +1,2 @@
++auto eth0
++iface eth0 inet dhcp
+diff -urN bar/etc/ssh/sshd_config foo/etc/ssh/sshd_config
+--- bar/etc/ssh/sshd_config	2016-04-20 18:23:35.921861577 -0400
++++ foo/etc/ssh/sshd_config	2016-05-24 08:35:30.669920681 -0400
+@@ -49,7 +49,7 @@
+ ChallengeResponseAuthentication no
+ 
+ # Change to no to disable tunnelled clear text passwords
+-PasswordAuthentication no
++PasswordAuthentication yes
+ 
+ # Kerberos options
+ #KerberosAuthentication no
+@@ -85,4 +85,4 @@
+ # If you just want the PAM account and session checks to run without
+ # PAM authentication, then enable this but set PasswordAuthentication
+ # and ChallengeResponseAuthentication to 'no'.
+-UsePAM yes
++UsePAM yes
+\ No newline at end of file
+diff -urN bar/lib/modules/3.17.0-00016-g186a77c-dirty/modules.alias foo/lib/modules/3.17.0-00016-g186a77c-dirty/modules.alias
+--- bar/lib/modules/3.17.0-00016-g186a77c-dirty/modules.alias	1969-12-31 19:00:00.000000000 -0500
++++ foo/lib/modules/3.17.0-00016-g186a77c-dirty/modules.alias	2016-02-11 11:41:35.339934665 -0500
+@@ -0,0 +1 @@
++# Aliases extracted from modules themselves.
+Binary files bar/lib/modules/3.17.0-00016-g186a77c-dirty/modules.alias.bin and foo/lib/modules/3.17.0-00016-g186a77c-dirty/modules.alias.bin differ
+Binary files bar/lib/modules/3.17.0-00016-g186a77c-dirty/modules.builtin.bin and foo/lib/modules/3.17.0-00016-g186a77c-dirty/modules.builtin.bin differ
+Binary files bar/lib/modules/3.17.0-00016-g186a77c-dirty/modules.dep.bin and foo/lib/modules/3.17.0-00016-g186a77c-dirty/modules.dep.bin differ
+diff -urN bar/lib/modules/3.17.0-00016-g186a77c-dirty/modules.devname foo/lib/modules/3.17.0-00016-g186a77c-dirty/modules.devname
+--- bar/lib/modules/3.17.0-00016-g186a77c-dirty/modules.devname	1969-12-31 19:00:00.000000000 -0500
++++ foo/lib/modules/3.17.0-00016-g186a77c-dirty/modules.devname	2016-02-11 11:41:35.339934665 -0500
+@@ -0,0 +1 @@
++# Device nodes to trigger on-demand module loading.
+diff -urN bar/lib/modules/3.17.0-00016-g186a77c-dirty/modules.softdep foo/lib/modules/3.17.0-00016-g186a77c-dirty/modules.softdep
+--- bar/lib/modules/3.17.0-00016-g186a77c-dirty/modules.softdep	1969-12-31 19:00:00.000000000 -0500
++++ foo/lib/modules/3.17.0-00016-g186a77c-dirty/modules.softdep	2016-02-11 11:41:35.339934665 -0500
+@@ -0,0 +1 @@
++# Soft dependencies extracted from modules themselves.
+diff -urN bar/lib/modules/3.17.0-00016-g186a77c-dirty/modules.symbols foo/lib/modules/3.17.0-00016-g186a77c-dirty/modules.symbols
+--- bar/lib/modules/3.17.0-00016-g186a77c-dirty/modules.symbols	1969-12-31 19:00:00.000000000 -0500
++++ foo/lib/modules/3.17.0-00016-g186a77c-dirty/modules.symbols	2016-02-11 11:41:35.339934665 -0500
+@@ -0,0 +1 @@
++# Aliases for symbols, used by symbol_request().
+Binary files bar/lib/modules/3.17.0-00016-g186a77c-dirty/modules.symbols.bin and foo/lib/modules/3.17.0-00016-g186a77c-dirty/modules.symbols.bin differ
+diff -urN bar/lib/modules-load.d/open-iscsi.conf foo/lib/modules-load.d/open-iscsi.conf
+--- bar/lib/modules-load.d/open-iscsi.conf	2016-04-15 13:30:47.000000000 -0400
++++ foo/lib/modules-load.d/open-iscsi.conf	1969-12-31 19:00:00.000000000 -0500
+@@ -1,2 +0,0 @@
+-iscsi_tcp
+-ib_iser
+diff -urN bar/lib/systemd/system/local-fs.target foo/lib/systemd/system/local-fs.target
+--- bar/lib/systemd/system/local-fs.target	2016-04-12 07:31:22.000000000 -0400
++++ foo/lib/systemd/system/local-fs.target	2016-05-24 08:21:24.618249132 -0400
+@@ -11,5 +11,5 @@
+ DefaultDependencies=no
+ Conflicts=shutdown.target
+ After=local-fs-pre.target
+-OnFailure=emergency.target
+-OnFailureJobMode=replace-irreversibly
++#OnFailure=emergency.target
++#OnFailureJobMode=replace-irreversibly
