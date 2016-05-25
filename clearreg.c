@@ -75,6 +75,7 @@ void _binary_imagefiles_zImage_start(int, int, int);
 void clearreg(void)
 {
     uint32_t pinaddr, ind = 0;
+	uint32_t tmpcnt=0;
     debug_puts("Start clearreg\n\r");
     Xil_Out32(XPSS_SYS_CTRL_BASEADDR + 0x8, SLCR_UNLOCK_MAGIC); //slcr_unlock
     /* remap DDR to zero, FILTERSTART */
@@ -101,6 +102,36 @@ void clearreg(void)
 #endif
         ind++;
     }
+
+#ifdef BOARD_zc706
+	/* 800MHz Clock support */
+    debug_puts("Start 800MHz Clock\n\r");
+	/* ARM_PLL_CFG update (LOCKCNT=0xFA, PLL_CD=0x2, PLL_RES=0x4)*/
+	Xil_Out32(0xF8000110, 0x000FA240);
+	/* Update FB_DIV=0x30 (48)*/
+	Xil_Out32(0xF8000100, (Xil_In32(0xF8000100) & ~(0x0007F000)) | 0x00030000);
+	/* Set Bypass PLL */
+	Xil_Out32(0xF8000100, (Xil_In32(0xF8000100) & ~(0x00000010)) | 0x00000010);
+	/* Assert Reset */
+	Xil_Out32(0xF8000100, (Xil_In32(0xF8000100) & ~(0x00000001)) | 0x00000001);
+	/* Deassert Reset */
+	Xil_Out32(0xF8000100, (Xil_In32(0xF8000100) & ~(0x00000001)) | 0x00000000);
+
+	/* Check PLL Status */
+
+	while ( !(Xil_In32(0xF800010C) & (0x00000001)) ) {
+		tmpcnt++;
+		if( tmpcnt > 0x0000FFFF ) {
+			debug_puts("PLL timeout\n\r");
+			break;
+		}
+	}
+
+	/* Remove Bypass PLL */
+	Xil_Out32(0xF8000100, (Xil_In32(0xF8000100) & ~(0x00000010)) | 0x00000000);
+	debug_puts("Finish 800MHz Clock\n\r");
+#endif
+
     Xil_Out32(XPSS_SYS_CTRL_BASEADDR + 0x4, SLCR_LOCK_MAGIC);   //slcr_lock
     debug_puts("Jump to linux\n\r");
     _binary_imagefiles_zImage_start(0, XILINX_EP107, 0x1000000 /* address of devicetree data */);
