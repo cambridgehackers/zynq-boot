@@ -2,17 +2,24 @@
 OS := $(shell uname)
 
 CONNECTALDIR ?= ../connectal
-BRANCH=old
+BRANCH?=connectal-xilinx-v2016.1
 ifeq ($(BRANCH),old)
 LINUX_KERNEL_BRANCH=connectal-2014.04
 DEFCONFIG=xilinx_zynq_portal_atheros_sdio_defconfig
 KERNELID=3.9.0-00055-g6f85fcc
 DTS_FILENAME=imagefiles/zynq-$(BOARD)-portal.dts
-else
+endif
+ifeq ($(BRANCH),connectal-xilinx-v2014.4-trd)
 LINUX_KERNEL_BRANCH=connectal-xilinx-v2014.4-trd
 DEFCONFIG=xilinx_zynq_portal_defconfig
 KERNELID=3.17.0-00013-g1a80225
 DTS_FILENAME=dts/zynq-$(BOARD).dts
+endif
+ifeq ($(BRANCH),connectal-xilinx-v2016.1)
+LINUX_KERNEL_BRANCH=connectal-xilinx-v2016.1
+DEFCONFIG=xilinx_zynq_portal_defconfig
+KERNELID=4.4.0-00014-gbb6a629
+DTS_FILENAME=linux-xlnx/arch/arm/boot/dts/zynq-connectal-$(BOARD).dts
 endif
 INITRD_SIZE=512
 
