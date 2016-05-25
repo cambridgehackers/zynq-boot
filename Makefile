@@ -135,20 +135,20 @@ endif
 # daffodil's zedboard uses this macaddress: 00:e0:0c:00:98:03 
 
 # if [ -f $(DTC) ]; then echo $(DTC); else make $(DTC); fi
-INVOKE_DTC = $(DTC) -I dts -O dtb -o dtb.tmp $(DTS_FILENAME)
-dtb.tmp: $(DTS_FILENAME)
+INVOKE_DTC = $(DTC) -I dts -O dtb -o tmp.dtb $(DTS_FILENAME)
+tmp.dtb: $(DTS_FILENAME)
 	$(INVOKE_DTC) || make $(DTC); $(INVOKE_DTC)
 
-zcomposite.elf: ramdisk dtb.tmp
+zcomposite.elf: ramdisk tmp.dtb
 	echo "******** PRINT GCC CONFIGURE OPTIONS *******"
 	$(PREFIX)gcc -v 2>&1
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm imagefiles/zImage z.tmp
 	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm ramdisk.image.gz r.tmp
-	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm dtb.tmp d.tmp
+	$(PREFIX)objcopy -I binary -B arm -O elf32-littlearm tmp.dtb d.tmp
 	$(PREFIX)gcc -Wall -Werror -c -DBOARD_$(BOARD) -fno-unwind-tables clearreg.c
 	$(PREFIX)ld -e 0x1008000 -z max-page-size=0x8000 -o zcomposite.elf --script zynq_linux_boot.lds r.tmp d.tmp clearreg.o z.tmp
 ifeq ($(DELETE_TEMP_FILES),1)
-	rm -f z.tmp r.tmp d.tmp clearreg.o c1.tmp clearreg.o ramdisk.image.gz dtb.tmp
+	rm -f z.tmp r.tmp d.tmp clearreg.o c1.tmp clearreg.o ramdisk.image.gz tmp.dtb
 endif
 
 canoncpio: canoncpio.c
@@ -285,7 +285,7 @@ webserver:
 	cd webui; ndk-build
 	cp webui/libs/armeabi/webserver imagefiles/webserver
 
-parallella-boot:  ramdisk dtb.tmp
+parallella-boot:  ramdisk tmp.dtb
 	# create ouput area
 	mkdir -p parallella-images
 	# device tree
