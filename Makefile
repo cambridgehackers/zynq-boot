@@ -18,7 +18,7 @@ endif
 ifeq ($(BRANCH),connectal-xilinx-v2016.1)
 LINUX_KERNEL_BRANCH=connectal-xilinx-v2016.1
 DEFCONFIG=xilinx_zynq_portal_defconfig
-KERNELID=4.4.0-00014-gbb6a629
+KERNELID=4.4.0-00018-g637e5c4
 DTS_FILENAME=linux-xlnx/arch/arm/boot/dts/zynq-connectal-$(BOARD).dts
 endif
 INITRD_SIZE=512
