@@ -25,7 +25,7 @@ import os, sys
 import argparse
 
 target_string = 'THE NEXT FIELD IS THE LOCAL MAC ADDRESS FOR UPDATE'
-dtb_header = [0, 0, 0, 0, 0, 3, 0, 0, 0, 6, 0, 0, 2] # last byte varies with machine 0x6c
+dtb_header = [0, 0, 0, 0, 0, 3, 0, 0, 0, 6, 0, 0] # last two bytes vary with machine 0x6c
 if len(sys.argv) != 3:
     print 'update_bootbin_mac: Usage: update_bootbin_mac.py <filename> <new_hex_value>'
     sys.exit(1)
@@ -47,7 +47,7 @@ for cbyte in dtb_header:
         print 'update_bootbin_mac: expected', dtb_header
         sys.exit(1)
     ind = ind + 1
-ind = ind + 1   # last byte in dtb header varies with machine
+ind = ind + 2   # last two bytes in dtb header vary with machine
 print 'current', [p.encode('hex') for p in inbuf[ind: ind + 6]]
 inbuf = inbuf[:ind+4] + chr(int(sys.argv[2], 0)) + inbuf[ind+5:]
 print 'updated', [p.encode('hex') for p in inbuf[ind: ind + 6]]
