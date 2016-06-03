@@ -26,8 +26,10 @@
 #include <stdint.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <sys/types.h>
 #include <arpa/inet.h>
 #include <libgen.h>
+#include <unistd.h>
 //#ifdef __APPLE__
 //#include <machine/endian.h>
 //#else
