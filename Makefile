@@ -69,7 +69,7 @@ all:
 zedboardtargets = $(addsuffix .zedboard, $(targetnames))
 zedboardtargets: $(zedboardtargets)
 $(zedboardtargets):
-	make BOARD=zedboard real.$(basename $@)
+	$(MAKE) BOARD=zedboard real.$(basename $@)
 
 RUNPARAMTEMP=$(subst :, ,$(RUNPARAM):5555)
 RUNIP=$(wordlist 1,1,$(RUNPARAMTEMP))
@@ -87,26 +87,26 @@ update-adb:
 zc702targets = $(addsuffix .zc702, $(targetnames))
 zc702targets: $(zc702targets)
 $(zc702targets):
-	make BOARD=zc702 real.$(basename $@)
+	$(MAKE) BOARD=zc702 real.$(basename $@)
 #################################################################################################
 # zc706
 zc706targets = $(addsuffix .zc706, $(targetnames))
 zc706targets: $(zc706targets)
 $(zc706targets):
-	make BOARD=zc706 real.$(basename $@)
+	$(MAKE) BOARD=zc706 real.$(basename $@)
 #################################################################################################
 # miniitx100
 miniitx100targets = $(addsuffix .miniitx100, $(targetnames))
 miniitx100targets: $(miniitx100targets)
 $(miniitx100targets):
-	make BOARD=miniitx100 real.$(basename $@)
+	$(MAKE) BOARD=miniitx100 real.$(basename $@)
 #################################################################################################
 # zybo
 zybo-BITFILE := bitfile/zybo/zybobsd.bit
 zybotargets = $(addsuffix .zybo, $(targetnames))
 zybotargets: $(zybotargets)
 $(zybotargets):
-	make BOARD=zybo real.$(basename $@)
+	$(MAKE) BOARD=zybo real.$(basename $@)
 #################################################################################################
 
 ifdef DAFFODIL
@@ -137,7 +137,7 @@ endif
 # if [ -f $(DTC) ]; then echo $(DTC); else make $(DTC); fi
 INVOKE_DTC = $(DTC) -I dts -O dtb -o tmp.dtb $(DTS_FILENAME)
 tmp.dtb: $(DTS_FILENAME)
-	$(INVOKE_DTC) || make $(DTC); $(INVOKE_DTC)
+	$(INVOKE_DTC) || $(MAKE) $(DTC); $(INVOKE_DTC)
 
 zcomposite.elf: ramdisk tmp.dtb
 	echo "******** PRINT GCC CONFIGURE OPTIONS *******"
@@ -186,8 +186,8 @@ zynqdrivers: zImage zynqdrivers.real
 zynqdrivers.real:
 	[ -d connectal ] || git clone git://github.com/cambridgehackers/connectal
 	(set -e; cd connectal; git pull origin master; \
-		DEFCONFIG=$(DEFCONFIG) make zynqdrivers-clean; \
-		DEFCONFIG=$(DEFCONFIG) make zynqdrivers )
+		DEFCONFIG=$(DEFCONFIG) $(MAKE) zynqdrivers-clean; \
+		DEFCONFIG=$(DEFCONFIG) $(MAKE) zynqdrivers )
 	cp connectal/drivers/zynqportal/zynqportal.ko imagefiles
 	cp connectal/drivers/portalmem/portalmem.ko imagefiles
 
@@ -204,7 +204,7 @@ real.sdcard: sdcard-$(BOARD)/system.img sdcard-$(BOARD)/userdata.img sdcard-$(BO
 sdcard-$(BOARD)/boot.bin:
 	mkdir -p sdcard-$(BOARD)
 	rm -f boot.bin
-	make BOARD=$(BOARD) real.bootbin
+	$(MAKE) BOARD=$(BOARD) real.bootbin
 	mv boot.bin sdcard-$(BOARD)/boot.bin
 
 filesystems/system-130710.img.bz2:
@@ -233,16 +233,16 @@ sdcard-$(BOARD)/userdata.img:
 endif
 
 sdcard-zynq.zip:
-	make all.zedboard
+	$(MAKE) all.zedboard
 	mv sdcard-zedboard sdcard-zynq
 	zip sdcard-zynq.zip sdcard-zynq/*.img sdcard-zynq/timelimit sdcard-zynq/webserver
 	mv sdcard-zynq sdcard-zedboard
 
 bootbin.zip:
 	echo MACBYTE=$(MACBYTE)
-	make all.zedboard
+	$(MAKE) all.zedboard
 	rm -f boot.bin
-	make MACBYTE=$(MACBYTE) bootbin.$(BOARD)
+	$(MAKE) MACBYTE=$(MACBYTE) bootbin.$(BOARD)
 	mkdir bootbin-$(BOARD)
 	mv -v boot.bin bootbin-$(BOARD)
 	cp -v sdcard-zedboard/*.ko bootbin-$(BOARD)
@@ -252,8 +252,8 @@ bootbin.zip:
 
 update-zynq-boot-filesystems:
 	rm -f *.zip
-	make sdcard-zynq.zip
-	for b in zedboard zc702 zc706; do make BOARD=$$b bootbin.zip; done
+	$(MAKE) sdcard-zynq.zip
+	for b in zedboard zc702 zc706; do $(MAKE) BOARD=$$b bootbin.zip; done
 	(cd ../zynq-boot-filesystems; git checkout --orphan v$(VERSION))
 	cp *.zip ../zynq-boot-filesystems
 	(cd ../zynq-boot-filesystems; git add *.zip; git commit -m "version $(VERSION)")
@@ -269,16 +269,16 @@ bin/dtc:
 	git fetch; \
 	git checkout $(LINUX_KERNEL_BRANCH); \
 	echo git rebase origin/$(LINUX_KERNEL_BRANCH); \
-	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) $(DEFCONFIG); \
-	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) -j8 zImage; \
-	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) -j8 modules; \
-	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) M=scripts/dtc; \
+	$(MAKE) ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) $(DEFCONFIG); \
+	$(MAKE) ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) zImage; \
+	$(MAKE) ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) modules; \
+	$(MAKE) ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) M=scripts/dtc; \
 	cp -fv scripts/dtc/dtc ../bin/dtc)
 
 zImage-clean:
 	if [ -d linux-xlnx ]; then true; else git clone git://github.com/cambridgehackers/linux-xlnx.git; fi
 	(cd linux-xlnx; \
-	make ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) clean)
+	$(MAKE) ARCH=arm CROSS_COMPILE=$(KERNEL_CROSS) $(MACHEADERS) clean)
 
 webserver:
 	if [ -d webui ]; then true; else git clone git://github.com/cambridgehackers/webui.git; fi
