@@ -12,6 +12,12 @@ on early-init
     # Set init and its forked children's oom_adj.
     write /proc/1/oom_adj -16
 
+    loglevel 3
+
+    mkdir /devtmpfs 0775 root system
+    mount devtmpfs none /devtmpfs
+    write /devtmpfs/console "mounting devtmpfs"
+
     start ueventd
 
 # create mountpoints

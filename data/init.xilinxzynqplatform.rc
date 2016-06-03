@@ -3,12 +3,23 @@ on early-init
     mkdir /mnt/sdcard 0000 system system
     # for backwards compatibility
 
-    mount vfat /dev/block/mmcblk0p1 /mnt/sdcard rw wait
+    write /devtmpfs/console "waiting for /dev/console"
+    wait /dev/console 20
+    write /devtmpfs/console "waiting for /dev/block"
+    wait /dev/block 20
+    write /devtmpfs/console "waiting for /dev/block/mmcblk0p1"
+    wait /dev/block/mmcblk0p1
+    write /devtmpfs/console "waiting for /devtmpfs/mmcblk0p1"
+    wait /devtmpfs/mmcblk0p1 20
+    mount vfat /devtmpfs/mmcblk0p1 /mnt/sdcard rw wait
+    write /devtmpfs/console "waiting for system.img"
+    wait /mnt/sdcard/system.img 20
     mount ext4 loop@/mnt/sdcard/system.img /system rw wait
     mount ext4 loop@/mnt/sdcard/userdata.img /data rw nosuid nodev wait
     chown 0 /fpgajtag
     #doesn't exist chgrp 0 /fpgajtag
     chmod 4755 /fpgajtag
+    mkdir /mnt/sdcard/tmp 0000 system system
     mount tmpfs tmpfs /mnt/sdcard/tmp
     mkdir /mnt/sdcard1 0000 system system
     mount debugfs debugfs /sys/kernel/debug
