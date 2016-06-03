@@ -1,5 +1,5 @@
 #
-OS := $(shell uname)
+BUILD_OS := $(shell uname)
 
 CONNECTALDIR ?= ../connectal
 BRANCH?=connectal-xilinx-v2016.1
@@ -19,11 +19,12 @@ ifeq ($(BRANCH),connectal-xilinx-v2016.1)
 LINUX_KERNEL_BRANCH=connectal-xilinx-v2016.1
 DEFCONFIG=xilinx_zynq_portal_defconfig
 KERNELID=4.4.0-00018-g637e5c4
-DTS_FILENAME=linux-xlnx/arch/arm/boot/dts/zynq-connectal-$(BOARD).dts
+OS?=ubuntu
+DTS_FILENAME=linux-xlnx/arch/arm/boot/dts/zynq-connectal-$(BOARD)-$(OS).dts
 endif
 INITRD_SIZE=512
 
-ifeq ($(OS), Darwin)
+ifeq ($(BUILD_OS), Darwin)
 MD5PROG = md5
 DTC=./bin/dtc
 MACHEADERS = HOSTCFLAGS="-I../mac_linux_headers"
